@@ -1,23 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-playfair: 'Playfair Display', serif;
+  --font-inter: 'Inter', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter);
+  background-color: #FAFAF8;
+  color: #1A1A2E;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-playfair);
 }
 
 @layer utilities {
@@ -25,3 +28,34 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in-up  { animation: fadeInUp  0.65s ease both; }
+.animate-fade-in     { animation: fadeIn    0.8s  ease both; }
+.animate-slide-left  { animation: slideInLeft 0.65s ease both; }
+
+.delay-100 { animation-delay: 0.10s; }
+.delay-200 { animation-delay: 0.20s; }
+.delay-300 { animation-delay: 0.30s; }
+.delay-400 { animation-delay: 0.40s; }
+.delay-500 { animation-delay: 0.50s; }
+
+.prose h2 { font-family: var(--font-playfair); font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: #1A1A2E; }
+.prose h3 { font-family: var(--font-playfair); font-size: 1.25rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: #1A1A2E; }
+.prose p { margin-bottom: 1rem; line-height: 1.75; color: #374151; }
+.prose ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+.prose li { margin-bottom: 0.25rem; color: #374151; }
+.prose strong { font-weight: 600; color: #1A1A2E; }
+.prose em { font-style: italic; }
