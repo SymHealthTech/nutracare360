@@ -36,7 +36,7 @@ export default async function HomePage() {
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         <HeroSlider />
 
-        <div className="relative z-10 text-center px-4 w-full max-w-5xl mx-auto pt-8 sm:pt-4 pb-52 sm:pb-20">
+        <div className="relative z-10 text-center px-4 w-full max-w-5xl mx-auto pt-8 sm:pt-4 pb-40 sm:pb-20">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full mb-6 border border-white/30 animate-fade-in">
             <span className="w-2 h-2 bg-accent-500 rounded-full animate-pulse" />
             Canada&apos;s #1 Holistic Health Directory
@@ -48,7 +48,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed animate-fade-in-up delay-200">
-            Discover certified complementary health practitioners — Acupuncture, Ayurveda, Naturopathy, Homeopathy and 33 more specialties — all in one place.
+            Discover certified complementary health practitioners — Chiropractic, Massage, Naturopathy, Homeopathy and 33 more specialties — all in one place.
           </p>
 
           <div className="animate-fade-in-up delay-300">
