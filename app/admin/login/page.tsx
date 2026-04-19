@@ -81,9 +81,6 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <p className="text-xs text-center text-[#6B7280] mt-4">
-            Default: admin@nutracare360.ca / AdminNC360!
-          </p>
         </div>
       </div>
     </div>
