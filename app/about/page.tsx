@@ -84,7 +84,7 @@ export default function AboutPage() {
           <p className="text-[#6B7280] text-center mb-12 max-w-2xl mx-auto">The passionate people behind NutraCare360, dedicated to transforming holistic healthcare in Canada.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { name: "Dr. Manisha Sonawane", role: "Co-Founder & CEO", org: "Nutracare360 Inc.", desc: "Entrepreneur, Homeopathic Consultant", img: "/images/team/manisha-sonawane.jpg", initials: "MS" },
+              { name: "Dr. Manisha Sonawane", role: "Co-Founder & CEO", org: "Nutracare360 Inc.", desc: "Entrepreneur, Homeopathic Consultant", img: "/images/team/manisha-sonawane.JPG", initials: "MS" },
               { name: "Mr. Anand Bansode", role: "Co-Founder & CMO", org: "Nutracare360 Inc.", desc: "Entrepreneur", img: "/images/team/anand-bansode.jpg", initials: "AB" },
               { name: "Mr. Satish Sonawane", role: "CTO & Managing Director", org: "Nutracare360 Inc.", desc: "", img: "/images/team/satish-sonawane.jpg", initials: "SS" },
               { name: "Mr. Andrew Sanden", role: "Business Advisor", org: "Co-Founder, Intrinsic Innovations & CEO, Intrinsic Venture Capital", desc: "", img: "/images/team/andrew-sanden.jpg", initials: "AS" },
