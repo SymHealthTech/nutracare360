@@ -47,7 +47,7 @@ export default async function HomePage() {
             <span className="text-secondary-400">Across Canada</span>
           </h1>
 
-          <p className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed animate-fade-in-up delay-200">
+          <p className="text-white/90 text-sm md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed animate-fade-in-up delay-200">
             Discover certified complementary health practitioners — Chiropractic, Massage, Naturopathy, Homeopathy and 33 more specialties — all in one place.
           </p>
 
