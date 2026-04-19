@@ -67,7 +67,7 @@ function SearchContent() {
   const activeFilters = [nameQuery, category, city, province, verifiedOnly ? "Verified only" : ""].filter(Boolean);
 
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
           <h1 className="font-playfair text-3xl font-bold text-[#1A1A2E] mb-4">

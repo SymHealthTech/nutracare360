@@ -35,7 +35,7 @@ export default async function CityPage({ params }: Props) {
   }).sort({ rating: -1 }).lean();
 
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link href="/cities" className="inline-flex items-center gap-2 text-sm text-[#6B7280] hover:text-primary-500 mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" /> All Cities

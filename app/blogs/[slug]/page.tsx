@@ -30,7 +30,7 @@ export default async function BlogPostPage({ params }: Props) {
   if (!blog) notFound();
 
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <Link href="/blogs" className="inline-flex items-center gap-2 text-sm text-[#6B7280] hover:text-primary-500 mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" /> All Articles

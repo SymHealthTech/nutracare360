@@ -21,7 +21,7 @@ export default function StoryPage({ params }: Props) {
   if (!story) notFound();
 
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         <Link
           href="/about#success-stories"

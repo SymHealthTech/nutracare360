@@ -20,8 +20,8 @@ async function seed() {
   }, { timestamps: true }));
 
   await Admin.create({
-    email: "admin@nutracare360.ca",
-    password: await bcrypt.hash("AdminNC360!", 12),
+    email: process.env.ADMIN_EMAIL!,
+    password: await bcrypt.hash(process.env.ADMIN_PASSWORD!, 12),
     name: "NutraCare360 Admin",
     role: "superadmin",
   });

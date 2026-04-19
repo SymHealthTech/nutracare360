@@ -54,7 +54,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
   const teamMembers = clinicDetails?.teamMembers?.filter((m) => m.name) ?? [];
 
   return (
-    <div className="pt-20 pb-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 pb-20 min-h-screen bg-[#FAFAF8]">
       {/* Hero banner */}
       <div className="relative h-48 md:h-56 w-full overflow-hidden bg-gradient-to-br from-primary-800 via-primary-600 to-emerald-500">
         {p.coverImage && (

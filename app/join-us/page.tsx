@@ -16,7 +16,7 @@ const benefits = [
 
 export default function JoinUsPage() {
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       {/* Hero */}
       <section className="bg-gradient-to-r from-primary-600 to-primary-800 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">

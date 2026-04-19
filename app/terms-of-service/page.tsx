@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <h1 className="font-playfair text-4xl font-bold text-[#1A1A2E] mb-2">Terms of Service</h1>
         <p className="text-[#6B7280] text-sm mb-8">Last updated: January 2025 | Governing Law: Ontario, Canada</p>

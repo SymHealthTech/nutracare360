@@ -20,7 +20,7 @@ export default function ContactPage() {
   const labelCls = "block text-xs font-semibold text-[#374151] mb-1.5 uppercase tracking-wider";
 
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h1 className="font-playfair text-4xl md:text-5xl font-bold text-[#1A1A2E] mb-4">Contact Us</h1>

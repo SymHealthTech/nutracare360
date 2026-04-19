@@ -15,7 +15,7 @@ export default async function PractitionersPage() {
   const practitioners = await Practitioner.find({ status: "approved" }).sort({ isFeatured: -1, rating: -1 }).lean();
 
   return (
-    <div className="pt-20 min-h-screen bg-[#FAFAF8]">
+    <div className="pt-16 min-h-screen bg-[#FAFAF8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-10">
           <h1 className="font-playfair text-4xl md:text-5xl font-bold text-[#1A1A2E] mb-3">
