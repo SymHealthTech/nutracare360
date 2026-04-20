@@ -97,7 +97,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-10 pt-6 text-center text-xs text-white/40">
-          © 2025 NutraCare360.ca. All rights reserved. | Made with ❤️ for Canada&apos;s wellness community
+          © 2025 NutraCare360.ca. All rights reserved. | Made with ❤️ for Canada&apos;s wellness community | a product by Sym HealthTech
         </div>
       </div>
     </footer>

@@ -32,7 +32,7 @@ export default function ContactPage() {
           <div className="space-y-5">
             {[
               { icon: Mail, title: "Email", value: "contact@nutracare360.ca" },
-              { icon: Phone, title: "Phone", value: "+1 (416) 555-0100" },
+              // { icon: Phone, title: "Phone", value: "+1 (416) 555-0100" },
               { icon: MapPin, title: "Based in", value: "Canada" },
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-4 bg-white rounded-2xl p-5 border border-[#E5E7EB]">

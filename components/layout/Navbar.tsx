@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Search, Leaf } from "lucide-react";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/categories", label: "Categories" },
@@ -40,12 +41,14 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-              <Leaf className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-playfair font-bold text-xl text-[#0D7377]">
-              Nutra<span className="text-[#52B788]">Care</span><span className="text-[#F4A261]">360</span>
-            </span>
+            <Image 
+                   src="/images/nutracare360_navbar.png"
+                   alt="NutraCare360"
+                   width={180}
+                   height={50}
+                   priority
+             />
+           
           </Link>
 
           {/* Desktop Nav */}
