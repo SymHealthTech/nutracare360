@@ -36,6 +36,7 @@ export function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "bg-white/95 backdrop-blur-sm shadow-sm" : "bg-white/90 backdrop-blur-sm"
       }`}
+       
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -47,6 +48,7 @@ export function Navbar() {
                    width={180}
                    height={50}
                    priority
+                   className="h-10 w-auto md:h-12 lg:h-14"
              />
            
           </Link>

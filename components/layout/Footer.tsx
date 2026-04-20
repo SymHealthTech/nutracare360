@@ -46,7 +46,7 @@ export function Footer() {
               {[
                 { href: "/categories", label: "All Categories" },
                 { href: "/cities", label: "Browse by City" },
-                { href: "/practitioners", label: "Find Practitioners" },
+                { href: "/search", label: "Find Practitioners" },
                 { href: "/success-stories", label: "Success Stories" },
                 { href: "/blogs", label: "Blog" },
               ].map((l) => (

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { connectDB } from "@/lib/db";
 import Practitioner from "@/models/Practitioner";
-import { PractitionerCard } from "@/components/practitioners/PractitionerCard";
 import { CITIES } from "@/lib/constants";
+import { CityPageClient } from "./CityPageClient";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +41,7 @@ export default async function CityPage({ params }: Props) {
           <ArrowLeft className="w-4 h-4" /> All Cities
         </Link>
 
-        <div className="mb-10">
+        <div className="mb-8">
           <div className="inline-block bg-primary-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full mb-3">
             {practitioners.length} Practitioners
           </div>
@@ -59,12 +59,7 @@ export default async function CityPage({ params }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {practitioners.map((p: any) => (
-              <PractitionerCard key={p.slug} practitioner={p} />
-            ))}
-          </div>
+          <CityPageClient city={city} practitioners={practitioners} />
         )}
       </div>
     </div>

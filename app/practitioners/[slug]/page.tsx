@@ -382,12 +382,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
               <div className="bg-white rounded-2xl p-6 border border-[#E5E7EB]">
                 <h3 className="font-playfair text-lg font-bold text-[#1A1A2E] mb-3">Quick Info</h3>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-[#6B7280]">Listing Type</span>
-                    <span className={`font-medium capitalize ${p.listingType === "premium" ? "text-secondary-600" : "text-[#374151]"}`}>
-                      {p.listingType as string}
-                    </span>
-                  </div>
+
                   {p.experience && (
                     <div className="flex justify-between">
                       <span className="text-[#6B7280]">Experience</span>
