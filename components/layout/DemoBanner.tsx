@@ -1,7 +1,7 @@
 "use client";
 
 export function DemoBanner() {
-  const msg = "⚠️  DEMO VERSION — This website contains sample data only. Real practitioners have not been listed yet. The full NutraCare360 directory will launch soon.     •     ";
+  const msg = " 🚀 NutraCare360 is launching across Canada. Secure your free listing before we go live. [Join Us Free →]";
 
   return (
     <div

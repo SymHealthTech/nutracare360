@@ -39,7 +39,7 @@ export default async function HomePage() {
         <div className="relative z-10 text-center px-4 w-full max-w-5xl mx-auto pt-8 sm:pt-4 pb-40 sm:pb-20">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-sm px-4 py-1 md:py-2 rounded-full mb-6 border border-white/30 animate-fade-in">
             <span className="w-2 h-2 bg-accent-500 rounded-full animate-pulse" />
-            Canada&apos;s #1 Holistic Health Directory
+            Canada's Holistic Health Practitioner Directory
           </div>
 
           <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6 animate-fade-in-up delay-100">
