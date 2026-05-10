@@ -7,10 +7,11 @@ import { Menu, X, Search, Leaf } from "lucide-react";
 import Image from "next/image";
 
 const navLinks = [
+  { href: "/", label: "Home" },
   { href: "/categories", label: "Categories" },
   { href: "/about", label: "About Us" },
   { href: "/blogs", label: "Blog" },
-  { href: "/success-stories", label: "Success Stories" },
+  // { href: "/success-stories", label: "Success Stories" }, // temporarily hidden
 ];
 
 export function Navbar() {

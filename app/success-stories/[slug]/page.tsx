@@ -17,6 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function StoryPage({ params }: Props) {
+  notFound(); // temporarily hidden — remove this line to re-enable
   const story = successStories.find((s) => s.slug === params.slug);
   if (!story) notFound();
 

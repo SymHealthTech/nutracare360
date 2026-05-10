@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { connectDB } from "@/lib/db";
 import SuccessStory from "@/models/SuccessStory";
 import { StarRating } from "@/components/ui/StarRating";
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SuccessStoriesPage() {
+  notFound(); // temporarily hidden — remove this line to re-enable
   await connectDB();
   const stories = await SuccessStory.find({ isPublished: true }).sort({ createdAt: -1 }).lean();
 

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
-import { DemoBanner } from "@/components/layout/DemoBanner";
 import { Providers } from "./providers";
 import { SITE_NAME, SITE_DESCRIPTION } from "@/lib/constants";
 
@@ -28,6 +27,10 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
+  icons: {
+    icon: "/images/nutracare360_navbar.png",
+    apple: "/images/nutracare360_navbar.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -36,7 +39,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased bg-[#FAFAF8] text-[#1A1A2E]">
         <Providers>
           <Navbar />
-          <DemoBanner />
           <main>{children}</main>
           <ConditionalFooter />
         </Providers>

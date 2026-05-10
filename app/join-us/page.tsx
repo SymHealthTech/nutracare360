@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { JoinUsForm } from "@/components/forms/JoinUsForm";
+import { PractitionerEditModal } from "@/components/forms/PractitionerEditModal";
 import { CheckCircle, Users, Globe, Star, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default function JoinUsPage() {
       <section className="bg-gradient-to-r from-primary-600 to-primary-800 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 text-white text-sm px-4 py-2 rounded-full mb-6">
-            <Users className="w-4 h-4" /> Join 500+ Practitioners
+            <Users className="w-4 h-4" /> Join 100+ Practitioners
           </div>
           <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-4">
             List Your Practice on NutraCare360
@@ -29,6 +30,11 @@ export default function JoinUsPage() {
           <p className="text-white/80 text-lg max-w-2xl mx-auto">
             Canada&apos;s fastest-growing holistic health directory. Free to join, no credit card required.
           </p>
+          {/* Already listed? Update button */}
+          <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
+            <span className="text-white/60 text-sm">Already listed?</span>
+            <PractitionerEditModal />
+          </div>
         </div>
       </section>
 

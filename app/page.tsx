@@ -74,7 +74,7 @@ export default async function HomePage() {
           <div className="max-w-4xl mx-auto px-4 py-3">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-white">
               {[
-                { num: "500+", label: "Practitioners" },
+                { num: "100+", label: "Practitioners" },
                 { num: "37", label: "Specialties" },
                 { num: "25+", label: "Cities" },
                 { num: "100%", label: "Canadian" },
@@ -271,7 +271,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── Section 8: Success Stories ── */}
+      {/* ── Section 8: Success Stories ── temporarily hidden */}
+      {false && (
       <section className="py-20 bg-[#FAFAF8]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -285,6 +286,7 @@ export default async function HomePage() {
           <SuccessStoriesSlider />
         </div>
       </section>
+      )}
     </div>
   );
 }

@@ -106,13 +106,17 @@ interface Props {
   isAdmin?: boolean;
   editId?: string;
   initialData?: InitialData;
+  selfEditToken?: string;
+  onSelfUpdateSuccess?: () => void;
 }
 
-export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
+export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken, onSelfUpdateSuccess }: Props) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState("");
 
   // Preview state — pre-populate from initialData URLs
   const [profileImagePreview, setProfileImagePreview] = useState<string>(initialData?.profileImage || "");
@@ -259,8 +263,43 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
 
   const isClinicType = form.practiceType === "clinic" || form.practiceType === "center";
 
+  const validateStep = (s: number): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (s === 0) {
+      if (isClinicType) {
+        if (!form.clinicDetails.clinicName.trim())
+          errs.clinicName = `${form.practiceType === "center" ? "Centre" : "Clinic"} name is required and cannot be empty.`;
+      } else {
+        if (!form.name.trim())
+          errs.name = "Full name is required and cannot be empty.";
+      }
+      if (form.categories.length === 0)
+        errs.categories = "Please select at least one category.";
+    }
+    if (s === 1) {
+      if (!form.address.city)
+        errs.city = "City is required. Please select a city.";
+      if (!form.address.province)
+        errs.province = "Province is required. Please select a province.";
+      if (!form.phone.trim())
+        errs.phone = "Phone number is required and cannot be empty.";
+      if (!form.email.trim())
+        errs.email = "Email address is required and cannot be empty.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+        errs.email = "Please enter a valid email address.";
+    }
+    if (s === 2) {
+      if (!form.shortBio.trim())
+        errs.shortBio = "Short bio is required and cannot be empty.";
+      if (!form.bio.trim())
+        errs.bio = "Full bio is required and cannot be empty.";
+    }
+    return errs;
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
+    setSubmitError("");
     try {
       // Upload images to Cloudinary
       let profileImageUrl = form.profileImage;
@@ -306,6 +345,22 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
         ...(isAdmin ? { status: "approved" } : {}),
       };
 
+      // Self-service OTP-verified update
+      if (selfEditToken && editId) {
+        const res = await fetch("/api/practitioners/self-update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ editToken: selfEditToken, practitionerId: editId, ...payload }),
+        });
+        if (res.ok) {
+          onSelfUpdateSuccess?.();
+        } else {
+          const data = await res.json();
+          setSubmitError(data.error || "Update failed. Please try again.");
+        }
+        return;
+      }
+
       const isEdit = isAdmin && !!editId;
       const endpoint = isEdit
         ? `/api/practitioners/${editId}`
@@ -328,17 +383,22 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
           setSubmitted(true);
         }
       } else {
-        alert("Submission failed. Please try again.");
+        const data = await res.json().catch(() => ({}));
+        setSubmitError(data.error || "Submission failed. Please check your details and try again.");
       }
     } catch {
-      alert("Submission failed. Please try again.");
+      setSubmitError("Submission failed. Please check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
   const inputCls = "w-full border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-sm text-[#1A1A2E] bg-white outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-colors";
+  const inputErrCls = "w-full border border-red-400 rounded-xl px-4 py-2.5 text-sm text-[#1A1A2E] bg-white outline-none focus:border-red-400 focus:ring-1 focus:ring-red-100 transition-colors";
   const labelCls = "block text-xs font-semibold text-[#374151] mb-1.5 uppercase tracking-wider";
+  const errCls = "text-xs text-red-500 mt-1";
+
+  const fieldCls = (key: string) => errors[key] ? inputErrCls : inputCls;
 
   if (submitted) {
     return (
@@ -437,11 +497,12 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
                 <div>
                   <label className={labelCls}>Full Name *</label>
                   <input
-                    className={inputCls}
+                    className={fieldCls("name")}
                     value={form.name}
-                    onChange={(e) => update("name", e.target.value)}
+                    onChange={(e) => { update("name", e.target.value); if (errors.name) setErrors((prev) => { const n = { ...prev }; delete n.name; return n; }); }}
                     placeholder="Dr. Jane Smith"
                   />
+                  {errors.name && <p className={errCls}>{errors.name}</p>}
                 </div>
                 <div>
                   <label className={labelCls}>Designation / Credentials</label>
@@ -466,11 +527,12 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
                     {form.practiceType === "center" ? "Centre" : "Clinic"} Name *
                   </label>
                   <input
-                    className={inputCls}
+                    className={fieldCls("clinicName")}
                     value={form.clinicDetails.clinicName}
-                    onChange={(e) => updateClinic("clinicName", e.target.value)}
+                    onChange={(e) => { updateClinic("clinicName", e.target.value); if (errors.clinicName) setErrors((prev) => { const n = { ...prev }; delete n.clinicName; return n; }); }}
                     placeholder="Harmony Wellness Clinic"
                   />
+                  {errors.clinicName && <p className={errCls}>{errors.clinicName}</p>}
                 </div>
                 <div>
                   <label className={labelCls}>Established Year</label>
@@ -606,9 +668,9 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
           {/* Categories — shown for all practice types */}
           <div>
             <label className={labelCls}>Categories (select all that apply) *</label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto border border-[#E5E7EB] rounded-xl p-3">
+            <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto border rounded-xl p-3 ${errors.categories ? "border-red-400" : "border-[#E5E7EB]"}`}>
               {CATEGORIES.map((cat) => (
-                <button key={cat.slug} onClick={() => toggleCategory(cat.name)}
+                <button key={cat.slug} onClick={() => { toggleCategory(cat.name); if (errors.categories) setErrors((prev) => { const n = { ...prev }; delete n.categories; return n; }); }}
                   className={`text-left text-xs px-3 py-2 rounded-lg border transition-colors ${form.categories.includes(cat.name) ? "bg-primary-500 text-white border-primary-500" : "border-[#E5E7EB] text-[#374151] hover:border-primary-300"}`}>
                   {cat.name}
                 </button>
@@ -617,6 +679,7 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
             {form.categories.length > 0 && (
               <p className="text-xs text-primary-600 mt-1">{form.categories.length} selected: {form.categories.join(", ")}</p>
             )}
+            {errors.categories && <p className={errCls}>{errors.categories}</p>}
           </div>
         </div>
       )}
@@ -632,17 +695,19 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelCls}>City *</label>
-              <select className={inputCls} value={form.address.city} onChange={(e) => updateAddr("city", e.target.value)}>
+              <select className={fieldCls("city")} value={form.address.city} onChange={(e) => { updateAddr("city", e.target.value); if (errors.city) setErrors((prev) => { const n = { ...prev }; delete n.city; return n; }); }}>
                 <option value="">Select city</option>
                 {CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
+              {errors.city && <p className={errCls}>{errors.city}</p>}
             </div>
             <div>
               <label className={labelCls}>Province *</label>
-              <select className={inputCls} value={form.address.province} onChange={(e) => updateAddr("province", e.target.value)}>
+              <select className={fieldCls("province")} value={form.address.province} onChange={(e) => { updateAddr("province", e.target.value); if (errors.province) setErrors((prev) => { const n = { ...prev }; delete n.province; return n; }); }}>
                 <option value="">Select province</option>
                 {PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
               </select>
+              {errors.province && <p className={errCls}>{errors.province}</p>}
             </div>
           </div>
           <div>
@@ -652,11 +717,13 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelCls}>Phone Number *</label>
-              <input className={inputCls} value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+1 (416) 555-0123" type="tel" />
+              <input className={fieldCls("phone")} value={form.phone} onChange={(e) => { update("phone", e.target.value); if (errors.phone) setErrors((prev) => { const n = { ...prev }; delete n.phone; return n; }); }} placeholder="+1 (416) 555-0123" type="tel" />
+              {errors.phone && <p className={errCls}>{errors.phone}</p>}
             </div>
             <div>
               <label className={labelCls}>Email Address *</label>
-              <input className={inputCls} value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="you@example.ca" type="email" />
+              <input className={fieldCls("email")} value={form.email} onChange={(e) => { update("email", e.target.value); if (errors.email) setErrors((prev) => { const n = { ...prev }; delete n.email; return n; }); }} placeholder="you@example.ca" type="email" />
+              {errors.email && <p className={errCls}>{errors.email}</p>}
             </div>
           </div>
           <div>
@@ -680,13 +747,15 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
           <h3 className="font-playfair text-lg font-bold text-[#1A1A2E]">About Your Practice</h3>
           <div>
             <label className={labelCls}>Short Bio * (max 200 chars)</label>
-            <input className={inputCls} value={form.shortBio} onChange={(e) => update("shortBio", e.target.value.slice(0, 200))} placeholder="One-line description of your practice" />
+            <input className={fieldCls("shortBio")} value={form.shortBio} onChange={(e) => { update("shortBio", e.target.value.slice(0, 200)); if (errors.shortBio) setErrors((prev) => { const n = { ...prev }; delete n.shortBio; return n; }); }} placeholder="One-line description of your practice" />
             <p className="text-xs text-[#6B7280] mt-1">{form.shortBio.length}/200</p>
+            {errors.shortBio && <p className={errCls}>{errors.shortBio}</p>}
           </div>
           <div>
             <label className={labelCls}>Full Bio * (max 2000 chars)</label>
-            <textarea className={`${inputCls} min-h-32 resize-y`} value={form.bio} onChange={(e) => update("bio", e.target.value.slice(0, 2000))} placeholder="Describe your background, approach, and what makes your practice unique..." />
+            <textarea className={`${fieldCls("bio")} min-h-32 resize-y`} value={form.bio} onChange={(e) => { update("bio", e.target.value.slice(0, 2000)); if (errors.bio) setErrors((prev) => { const n = { ...prev }; delete n.bio; return n; }); }} placeholder="Describe your background, approach, and what makes your practice unique..." />
             <p className="text-xs text-[#6B7280] mt-1">{form.bio.length}/2000</p>
+            {errors.bio && <p className={errCls}>{errors.bio}</p>}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -840,15 +909,21 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
             <div className="flex gap-2"><span className="font-semibold w-32 text-[#374151]">Categories:</span><span>{form.categories.join(", ")}</span></div>
             <div className="flex gap-2"><span className="font-semibold w-32 text-[#374151]">Services:</span><span>{form.services.filter(s => s.name).length} service(s)</span></div>
           </div>
-          {isAdmin ? (
+          {isAdmin && (
             <div className="bg-accent-50 border border-accent-100 rounded-xl p-4 text-sm text-accent-800">
               {editId
                 ? <><strong>Admin mode:</strong> Changes will be saved immediately.</>
                 : <><strong>Admin mode:</strong> This listing will be created with <strong>Approved</strong> status immediately.</>}
             </div>
-          ) : (
+          )}
+          {!isAdmin && !selfEditToken && (
             <div className="bg-primary-50 border border-primary-100 rounded-xl p-4 text-sm text-primary-800">
               <strong>What happens next?</strong> Our admin team will review your submission within 48 hours. You&apos;ll receive a confirmation at {form.email || "your email"}.
+            </div>
+          )}
+          {submitError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+              {submitError}
             </div>
           )}
         </div>
@@ -857,7 +932,7 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
       {/* Navigation buttons */}
       <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#E5E7EB]">
         <button
-          onClick={() => setStep(Math.max(0, step - 1))}
+          onClick={() => { setErrors({}); setSubmitError(""); setStep(Math.max(0, step - 1)); }}
           disabled={step === 0}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#E5E7EB] text-sm font-medium text-[#374151] hover:border-primary-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
@@ -866,14 +941,35 @@ export function JoinUsForm({ isAdmin = false, editId, initialData }: Props) {
 
         {step < STEPS.length - 1 ? (
           <button
-            onClick={() => setStep(step + 1)}
+            onClick={() => {
+              const errs = validateStep(step);
+              if (Object.keys(errs).length > 0) {
+                setErrors(errs);
+                return;
+              }
+              setErrors({});
+              setStep(step + 1);
+            }}
             className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors"
           >
             Continue <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
           <button
-            onClick={handleSubmit}
+            onClick={() => {
+              const errs0 = validateStep(0);
+              const errs1 = validateStep(1);
+              const errs2 = validateStep(2);
+              const allErrs = { ...errs0, ...errs1, ...errs2 };
+              if (Object.keys(allErrs).length > 0) {
+                setErrors(allErrs);
+                if (Object.keys(errs0).length > 0) setStep(0);
+                else if (Object.keys(errs1).length > 0) setStep(1);
+                else setStep(2);
+                return;
+              }
+              handleSubmit();
+            }}
             disabled={submitting}
             className="flex items-center gap-2 bg-accent-500 hover:bg-accent-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60"
           >

@@ -47,7 +47,7 @@ export function Footer() {
                 { href: "/categories", label: "All Categories" },
                 { href: "/cities", label: "Browse by City" },
                 { href: "/search", label: "Find Practitioners" },
-                { href: "/success-stories", label: "Success Stories" },
+                // { href: "/success-stories", label: "Success Stories" }, // temporarily hidden
                 { href: "/blogs", label: "Blog" },
               ].map((l) => (
                 <li key={l.href}>
@@ -97,7 +97,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-10 pt-6 text-center text-xs text-white/40">
-          © 2025 NutraCare360.ca. All rights reserved. | Made with ❤️ for Canada&apos;s wellness community | a product by Sym HealthTech
+          © 2025 NutraCare360.ca. All rights reserved. | Made with ❤️ for Canada&apos;s wellness community | made by Sym HealthTech
         </div>
       </div>
     </footer>

@@ -86,19 +86,35 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         )}
 
         {practitioners.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-[#6B7280] mb-4">
-              {selectedCity
-                ? `No practitioners found in ${selectedCity} for this category.`
-                : "No practitioners found for this category yet."}
-            </p>
-            {!selectedCity && (
-              <Link
-                href="/join-us"
-                className="bg-primary-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-600 transition-colors"
-              >
-                Be the First to List
-              </Link>
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            {selectedCity ? (
+              <>
+                <p className="text-[#6B7280] text-base mb-4">
+                  No practitioners found in <span className="font-semibold text-[#1A1A2E]">{selectedCity}</span> for this category.
+                </p>
+                <p className="text-sm text-[#9CA3AF]">Try selecting a different city or view all locations.</p>
+              </>
+            ) : (
+              <>
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center mb-6 text-3xl"
+                  style={{ background: "linear-gradient(135deg, #0D7377, #52B788)" }}
+                >
+                  🌱
+                </div>
+                <h2 className="font-playfair text-3xl font-bold text-[#1A1A2E] mb-3">
+                  Coming Soon
+                </h2>
+                <p className="text-[#6B7280] text-base max-w-md mb-8">
+                  We're growing! Practitioners in <span className="font-semibold text-[#1A1A2E]">{cat.name}</span> will be listed here soon. Check back shortly.
+                </p>
+                <Link
+                  href="/join-us"
+                  className="bg-primary-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-600 transition-colors"
+                >
+                  Be the First to List
+                </Link>
+              </>
             )}
           </div>
         ) : (
