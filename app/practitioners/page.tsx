@@ -3,7 +3,7 @@ import Practitioner from "@/models/Practitioner";
 import { PractitionerCard } from "@/components/practitioners/PractitionerCard";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "All Practitioners | NutraCare360",

@@ -18,7 +18,9 @@ export async function GET() {
       count: countMap[cat.name] || 0,
     }));
 
-    return NextResponse.json({ categories });
+    return NextResponse.json({ categories }, {
+      headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=3600" },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

@@ -6,7 +6,9 @@ export async function GET() {
   try {
     await connectDB();
     const stories = await SuccessStory.find({ isPublished: true }).sort({ createdAt: -1 });
-    return NextResponse.json({ stories });
+    return NextResponse.json({ stories }, {
+      headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

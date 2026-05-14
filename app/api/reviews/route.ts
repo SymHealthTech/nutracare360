@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Types } from "mongoose";
 import { connectDB } from "@/lib/db";
 import Review from "@/models/Review";
 import Practitioner from "@/models/Practitioner";
@@ -14,7 +15,9 @@ export async function GET(req: NextRequest) {
       .limit(50)
       .lean();
 
-    return NextResponse.json({ reviews });
+    return NextResponse.json({ reviews }, {
+      headers: { "Cache-Control": "s-maxage=30, stale-while-revalidate=120" },
+    });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
@@ -40,12 +43,14 @@ export async function POST(req: NextRequest) {
       isApproved: true,
     });
 
-    // Recalculate and persist aggregate rating on the Practitioner document
-    const allReviews = await Review.find({ practitionerId, isApproved: true }).lean();
-    const avg = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+    // Recalculate aggregate rating using DB-side $avg (no JS reduce over all reviews)
+    const [agg] = await Review.aggregate([
+      { $match: { practitionerId: new Types.ObjectId(practitionerId), isApproved: true } },
+      { $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } },
+    ]);
     await Practitioner.findByIdAndUpdate(practitionerId, {
-      rating: Math.round(avg * 10) / 10,
-      reviewCount: allReviews.length,
+      rating: Math.round((agg?.avg ?? 0) * 10) / 10,
+      reviewCount: agg?.count ?? 0,
     });
 
     return NextResponse.json({ review }, { status: 201 });

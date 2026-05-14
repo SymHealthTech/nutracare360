@@ -7,7 +7,7 @@ import { CITIES } from "@/lib/constants";
 import { CityPageClient } from "./CityPageClient";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface Props { params: { "city-slug": string } }
 

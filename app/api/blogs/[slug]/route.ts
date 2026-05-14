@@ -9,7 +9,9 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
     await connectDB();
     const blog = await Blog.findOne({ slug: params.slug, isPublished: true }).select("-__v");
     if (!blog) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json({ blog });
+    return NextResponse.json({ blog }, {
+      headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

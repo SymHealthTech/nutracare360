@@ -22,7 +22,9 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .select("-content -__v");
 
-    return NextResponse.json({ blogs, total, page, pages: Math.ceil(total / limit) });
+    return NextResponse.json({ blogs, total, page, pages: Math.ceil(total / limit) }, {
+      headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

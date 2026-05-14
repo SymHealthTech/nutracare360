@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 import { connectDB } from "@/lib/db";
 import Practitioner from "@/models/Practitioner";
+
+const mailer = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+});
 
 export async function GET(req: NextRequest) {
   try {
@@ -49,7 +56,9 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .select("-__v");
 
-    return NextResponse.json({ practitioners, total, page, pages: Math.ceil(total / limit) });
+    return NextResponse.json({ practitioners, total, page, pages: Math.ceil(total / limit) }, {
+      headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -67,13 +76,7 @@ export async function POST(req: NextRequest) {
 
     // Send admin notification email (optional - graceful fail)
     try {
-      const nodemailer = await import("nodemailer");
-      const transporter = nodemailer.default.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || "587"),
-        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-      });
-      await transporter.sendMail({
+      await mailer.sendMail({
         from: process.env.SMTP_USER,
         to: process.env.ADMIN_EMAIL,
         subject: `New Practitioner Submission: ${body.name}`,

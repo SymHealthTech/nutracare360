@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 import { connectDB } from "@/lib/db";
 import ContactSubmission from "@/models/ContactSubmission";
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,12 +16,6 @@ export async function POST(req: NextRequest) {
     const submission = await ContactSubmission.create(body);
 
     try {
-      const nodemailer = await import("nodemailer");
-      const transporter = nodemailer.default.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || "587"),
-        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-      });
       await transporter.sendMail({
         from: process.env.SMTP_USER,
         to: process.env.ADMIN_EMAIL,

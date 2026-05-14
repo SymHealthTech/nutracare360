@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 import { connectDB } from "@/lib/db";
 import Practitioner from "@/models/Practitioner";
 import OTPVerification from "@/models/OTPVerification";
-import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT || 587),
+  secure: false,
+  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+});
 
 function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -61,13 +68,6 @@ export async function POST(req: NextRequest) {
     });
 
     // Send OTP email
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: false,
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    });
-
     await transporter.sendMail({
       from: `"NutraCare360" <${process.env.SMTP_USER}>`,
       to: normalizedEmail,

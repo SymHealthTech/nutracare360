@@ -14,7 +14,9 @@ export async function GET() {
     const countMap = Object.fromEntries(counts.map((c) => [c._id, c.count]));
     const cities = CITIES.map((city) => ({ name: city, count: countMap[city] || 0 }));
 
-    return NextResponse.json({ cities });
+    return NextResponse.json({ cities }, {
+      headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=3600" },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
