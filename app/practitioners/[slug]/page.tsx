@@ -79,7 +79,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link href="/practitioners" className="inline-flex items-center gap-2 text-sm text-[#6B7280] hover:text-primary-500 mt-6 mb-4 transition-colors">
+        <Link href="/search" className="inline-flex items-center gap-2 text-sm text-[#6B7280] hover:text-primary-500 mt-6 mb-4 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Practitioners
         </Link>
 
@@ -275,7 +275,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
                         {service.description && <p className="text-xs text-[#6B7280] mt-0.5">{service.description}</p>}
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <div className="text-primary-600 font-bold text-sm">{service.price}</div>
+                        <div className="text-primary-600 font-bold text-sm">CAD ${service.price}</div>
                         {service.duration && (
                           <div className="flex items-center gap-1 text-xs text-[#6B7280] justify-end mt-0.5">
                             <Clock className="w-3 h-3" />{service.duration}

@@ -10,7 +10,7 @@ interface FeaturedClinicCardProps {
 export function FeaturedClinicCard({ practitioner: p }: FeaturedClinicCardProps) {
   const isClinic = p.practiceType === "clinic" || p.practiceType === "center";
   const displayName = isClinic ? p.clinicDetails?.clinicName || p.businessName : p.businessName || p.name;
-  const photo = isClinic ? p.clinicDetails?.logo || p.profilePhoto : p.profilePhoto;
+  const photo = isClinic ? p.coverImage || p.profileImage : p.profileImage;
   const badgeLabel = p.practiceType === "clinic" ? "Clinic" : p.practiceType === "center" ? "Centre" : "Practitioner";
   const categories: string[] = p.categories?.slice(0, 3) || [];
   const teamCount: number = p.clinicDetails?.totalPractitioners ?? p.clinicDetails?.teamMembers?.length ?? 0;

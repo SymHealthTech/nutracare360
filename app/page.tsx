@@ -15,7 +15,7 @@ async function getData() {
   try {
     await connectDB();
     const [practitioners, blogs] = await Promise.all([
-      Practitioner.find({ status: "approved", isFeatured: true, practiceType: { $in: ["clinic", "center"] } }).limit(3).lean(),
+      Practitioner.find({ status: "approved", practiceType: { $in: ["clinic", "center"] } }).sort({ _id: -1 }).limit(3).lean(),
       Blog.find({ isPublished: true }).sort({ publishedAt: -1 }).limit(3).select("-content").lean(),
     ]);
     return { practitioners, blogs };
