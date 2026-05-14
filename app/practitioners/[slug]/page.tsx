@@ -11,6 +11,7 @@ import {
   Clock, Share2, ExternalLink, Link2, Video, Map,
 } from "lucide-react";
 import type { Metadata } from "next";
+import { SendEmailButton } from "@/components/practitioners/SendEmailButton";
 
 interface Props { params: { slug: string } }
 
@@ -44,20 +45,18 @@ export default async function PractitionerProfilePage({ params }: Props) {
   const isClinic = p.practiceType === "clinic" || p.practiceType === "center";
   const clinicDetails = p.clinicDetails as {
     clinicName?: string;
-    logo?: string;
     establishedYear?: number;
     totalPractitioners?: number;
     teamMembers?: Array<{ name: string; designation?: string; photo?: string; specialties?: string[] }>;
   } | undefined;
   const displayName = isClinic ? (clinicDetails?.clinicName ?? (p.name as string)) : (p.name as string);
-  const displayImage = isClinic ? clinicDetails?.logo : (p.profileImage as string | undefined);
   const teamMembers = clinicDetails?.teamMembers?.filter((m) => m.name) ?? [];
 
   return (
     <div className="pt-16 pb-20 min-h-screen bg-[#FAFAF8]">
       {/* Hero banner */}
-      <div className="relative h-48 md:h-56 w-full overflow-hidden bg-gradient-to-br from-primary-800 via-primary-600 to-emerald-500">
-        {p.coverImage && (
+      <div className={`relative w-full overflow-hidden bg-gradient-to-br from-primary-800 via-primary-600 to-emerald-500 ${isClinic ? "h-20 md:h-24" : "h-48 md:h-56"}`}>
+        {!isClinic && p.coverImage && (
           <Image
             src={p.coverImage as string}
             alt={`${p.name} practice`}
@@ -75,7 +74,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
           <h2 className="font-playfair text-3xl md:text-4xl font-bold drop-shadow">
             {p.practiceType === "clinic" ? "Clinic Profile" : p.practiceType === "center" ? "Centre Profile" : "Practitioner Profile"}
           </h2>
-          <p className="mt-2 text-primary-100 text-sm max-w-md">Connecting you with certified nutrition &amp; wellness experts across Canada</p>
+          {!isClinic && <p className="mt-2 text-primary-100 text-sm max-w-md">Connecting you with certified nutrition &amp; wellness experts across Canada</p>}
         </div>
       </div>
 
@@ -88,41 +87,54 @@ export default async function PractitionerProfilePage({ params }: Props) {
           {/* ── LEFT COLUMN ── */}
           <div className="lg:col-span-2 space-y-8">
             {/* Hero info */}
-            <div className="bg-white rounded-2xl p-6 border border-[#E5E7EB] shadow-sm">
-              <div className="flex items-start gap-5">
-                <div className="relative flex-shrink-0">
-                  <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-primary-100">
-                    {displayImage ? (
-                      <Image src={displayImage} alt={displayName} width={96} height={96} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary-600">
-                        {displayName.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-                  {p.isVerified && (
-                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full shadow-md p-0.5">
-                      <CheckCircle className="w-5 h-5 text-primary-500" />
-                    </div>
+            {isClinic ? (
+              <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+                {/* Clinic cover image — full-width banner */}
+                <div className="relative w-full h-52 md:h-64 bg-gradient-to-br from-primary-800 via-primary-600 to-emerald-500">
+                  {p.coverImage && (
+                    <Image
+                      src={p.coverImage as string}
+                      alt={`${displayName} cover`}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
                   )}
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <h1 className="font-playfair text-2xl md:text-3xl font-bold text-[#1A1A2E]">{displayName}</h1>
-                      {!isClinic && p.designation && <p className="text-[#6B7280] text-sm mt-0.5">{p.designation as string}</p>}
-                      {!isClinic && p.businessName && <p className="text-primary-600 text-sm font-medium">{p.businessName as string}</p>}
-                      {isClinic && clinicDetails?.establishedYear && (
-                        <p className="text-[#6B7280] text-sm mt-0.5">Est. {clinicDetails.establishedYear}</p>
+                {/* Logo + info below cover */}
+                <div className="px-6 pb-6">
+                  <div className="flex items-end gap-4 -mt-10 mb-4">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-primary-100">
+                        {p.profileImage ? (
+                          <Image src={p.profileImage as string} alt={displayName} width={80} height={80} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary-600">
+                            {displayName.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      {p.isVerified && (
+                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full shadow-md p-0.5">
+                          <CheckCircle className="w-5 h-5 text-primary-500" />
+                        </div>
                       )}
                     </div>
                     {p.isVerified && (
-                      <span className="bg-primary-50 text-primary-700 text-xs font-semibold px-3 py-1 rounded-full border border-primary-200 flex items-center gap-1">
+                      <span className="mb-1 bg-primary-50 text-primary-700 text-xs font-semibold px-3 py-1 rounded-full border border-primary-200 flex items-center gap-1">
                         <CheckCircle className="w-3.5 h-3.5" /> Verified
                       </span>
                     )}
                   </div>
+
+                  <h1 className="font-playfair text-2xl md:text-3xl font-bold text-[#1A1A2E]">{displayName}</h1>
+                  {clinicDetails?.establishedYear && (
+                    <p className="text-[#6B7280] text-sm mt-0.5">Est. {clinicDetails.establishedYear}</p>
+                  )}
+                  {clinicDetails?.totalPractitioners && (
+                    <p className="text-[#6B7280] text-sm">{clinicDetails.totalPractitioners} practitioners</p>
+                  )}
 
                   {typeof p.rating === "number" && (
                     <div className="mt-2">
@@ -148,7 +160,6 @@ export default async function PractitionerProfilePage({ params }: Props) {
                     </div>
                   )}
 
-                  {/* Social icons */}
                   {social && (
                     <div className="flex gap-3 mt-3">
                       {social.instagram && <a href={social.instagram} target="_blank" rel="noopener noreferrer" className="text-[#6B7280] hover:text-primary-500"><Share2 className="w-4 h-4" /></a>}
@@ -159,7 +170,76 @@ export default async function PractitionerProfilePage({ params }: Props) {
                   )}
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-6 border border-[#E5E7EB] shadow-sm">
+                <div className="flex items-start gap-5">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-primary-100">
+                      {p.profileImage ? (
+                        <Image src={p.profileImage as string} alt={displayName} width={96} height={96} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary-600">
+                          {displayName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    {p.isVerified && (
+                      <div className="absolute -bottom-1 -right-1 bg-white rounded-full shadow-md p-0.5">
+                        <CheckCircle className="w-5 h-5 text-primary-500" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <h1 className="font-playfair text-2xl md:text-3xl font-bold text-[#1A1A2E]">{displayName}</h1>
+                        {p.designation && <p className="text-[#6B7280] text-sm mt-0.5">{p.designation as string}</p>}
+                        {p.businessName && <p className="text-primary-600 text-sm font-medium">{p.businessName as string}</p>}
+                      </div>
+                      {p.isVerified && (
+                        <span className="bg-primary-50 text-primary-700 text-xs font-semibold px-3 py-1 rounded-full border border-primary-200 flex items-center gap-1">
+                          <CheckCircle className="w-3.5 h-3.5" /> Verified
+                        </span>
+                      )}
+                    </div>
+
+                    {typeof p.rating === "number" && (
+                      <div className="mt-2">
+                        <StarRating rating={p.rating as number} count={p.reviewCount as number} />
+                      </div>
+                    )}
+
+                    {address?.city && (
+                      <div className="flex items-center gap-1 mt-2 text-sm text-[#6B7280]">
+                        <MapPin className="w-4 h-4" />
+                        {address.street}, {address.city}, {address.province} {address.postalCode}
+                      </div>
+                    )}
+
+                    {(p.categories as string[])?.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {(p.categories as string[]).map((cat) => (
+                          <Link key={cat} href={`/categories/${cat.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                            className="bg-primary-50 text-primary-700 text-xs px-2.5 py-1 rounded-full font-medium hover:bg-primary-100 transition-colors">
+                            {cat}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+
+                    {social && (
+                      <div className="flex gap-3 mt-3">
+                        {social.instagram && <a href={social.instagram} target="_blank" rel="noopener noreferrer" className="text-[#6B7280] hover:text-primary-500"><Share2 className="w-4 h-4" /></a>}
+                        {social.facebook && <a href={social.facebook} target="_blank" rel="noopener noreferrer" className="text-[#6B7280] hover:text-primary-500"><ExternalLink className="w-4 h-4" /></a>}
+                        {social.linkedin && <a href={social.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#6B7280] hover:text-primary-500"><Link2 className="w-4 h-4" /></a>}
+                        {social.youtube && <a href={social.youtube} target="_blank" rel="noopener noreferrer" className="text-[#6B7280] hover:text-primary-500"><Video className="w-4 h-4" /></a>}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* About */}
             {p.bio && (
@@ -331,14 +411,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
                     Call Now
                   </a>
                 )}
-                {p.email && (
-                  <a
-                    href={`mailto:${p.email}`}
-                    className="mt-2 block w-full border border-primary-500 text-primary-500 hover:bg-primary-50 text-center py-3 rounded-xl font-semibold text-sm transition-colors"
-                  >
-                    Send Email
-                  </a>
-                )}
+                {p.email && <SendEmailButton email={p.email as string} />}
               </div>
 
               {/* Location card */}

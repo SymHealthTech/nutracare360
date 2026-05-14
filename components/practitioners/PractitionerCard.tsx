@@ -13,7 +13,6 @@ interface PractitionerCardProps {
     businessName?: string;
     clinicDetails?: {
       clinicName?: string;
-      logo?: string;
     };
     categories?: string[];
     address?: { city?: string; province?: string };
@@ -28,7 +27,7 @@ export function PractitionerCard({ practitioner: p }: PractitionerCardProps) {
   const isClinic = p.practiceType === "clinic" || p.practiceType === "center";
 
   const displayName = isClinic ? (p.clinicDetails?.clinicName ?? p.name) : p.name;
-  const displayImage = isClinic ? p.clinicDetails?.logo : p.profileImage;
+  const displayImage = p.profileImage;
   const displaySubtitle = isClinic
     ? p.categories?.join(", ") ?? ""
     : p.designation ?? "";

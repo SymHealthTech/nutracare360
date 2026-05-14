@@ -31,7 +31,6 @@ interface TeamMember {
 
 interface ClinicDetails {
   clinicName: string;
-  logo: string;
   establishedYear: string;
   teamMembers: TeamMember[];
 }
@@ -42,6 +41,7 @@ interface FormData {
   businessName: string;
   designation: string;
   profileImage: string;
+  coverImage: string;
   clinicDetails: ClinicDetails;
   categories: string[];
   address: { street: string; city: string; province: string; postalCode: string };
@@ -80,9 +80,9 @@ interface InitialData {
   businessName?: string;
   designation?: string;
   profileImage?: string;
+  coverImage?: string;
   clinicDetails?: {
     clinicName?: string;
-    logo?: string;
     establishedYear?: string | number;
     teamMembers?: Array<{ name: string; designation: string; photo: string; specialties: string | string[] }>;
   };
@@ -120,20 +120,20 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
 
   // Preview state — pre-populate from initialData URLs
   const [profileImagePreview, setProfileImagePreview] = useState<string>(initialData?.profileImage || "");
-  const [logoPreview, setLogoPreview] = useState<string>(initialData?.clinicDetails?.logo || "");
+  const [coverImagePreview, setCoverImagePreview] = useState<string>(initialData?.coverImage || "");
   const [memberPhotoPreviews, setMemberPhotoPreviews] = useState<string[]>(
     initialData?.clinicDetails?.teamMembers?.map((m) => m.photo || "") || [""]
   );
 
   // Actual File objects for upload (null = keep existing URL)
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [memberPhotoFiles, setMemberPhotoFiles] = useState<(File | null)[]>(
     initialData?.clinicDetails?.teamMembers?.map(() => null) || [null]
   );
 
   const profileImageRef = useRef<HTMLInputElement>(null);
-  const logoInputRef = useRef<HTMLInputElement>(null);
+  const coverImageRef = useRef<HTMLInputElement>(null);
   const memberPhotoRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [form, setForm] = useState<FormData>({
@@ -142,9 +142,9 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
     businessName: initialData?.businessName || "",
     designation: initialData?.designation || "",
     profileImage: initialData?.profileImage || "",
+    coverImage: initialData?.coverImage || "",
     clinicDetails: {
       clinicName: initialData?.clinicDetails?.clinicName || "",
-      logo: initialData?.clinicDetails?.logo || "",
       establishedYear: String(initialData?.clinicDetails?.establishedYear || ""),
       teamMembers: initialData?.clinicDetails?.teamMembers?.map((m) => ({
         name: m.name,
@@ -217,12 +217,11 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
     setProfileImageFile(file);
   };
 
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setLogoPreview(URL.createObjectURL(file));
-    setLogoFile(file);
-    updateClinic("logo", file.name);
+    setCoverImagePreview(URL.createObjectURL(file));
+    setCoverImageFile(file);
   };
 
   const handleMemberPhotoChange = (i: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -303,14 +302,14 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
     try {
       // Upload images to Cloudinary
       let profileImageUrl = form.profileImage;
-      let logoUrl = form.clinicDetails.logo;
+      let coverImageUrl = form.coverImage;
       const memberPhotoUrls = form.clinicDetails.teamMembers.map((m) => m.photo);
 
       if (profileImageFile) {
         profileImageUrl = await uploadToCloudinary(profileImageFile);
       }
-      if (logoFile) {
-        logoUrl = await uploadToCloudinary(logoFile);
+      if (coverImageFile) {
+        coverImageUrl = await uploadToCloudinary(coverImageFile);
       }
       for (let i = 0; i < memberPhotoFiles.length; i++) {
         if (memberPhotoFiles[i]) {
@@ -326,6 +325,7 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
       const payload = {
         ...form,
         profileImage: profileImageUrl,
+        coverImage: coverImageUrl,
         name: isClinicType ? form.clinicDetails.clinicName : form.name,
         experience: parseInt(form.experience) || 0,
         languages: form.languages.split(",").map((l) => l.trim()).filter(Boolean),
@@ -335,7 +335,6 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
         clinicDetails: isClinicType
           ? {
               ...form.clinicDetails,
-              logo: logoUrl,
               establishedYear: parseInt(form.clinicDetails.establishedYear) || undefined,
               teamMembers: teamMembersWithPhotos
                 .filter((m) => m.name)
@@ -493,6 +492,41 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
                 </div>
               </div>
 
+              {/* Cover Image */}
+              <div>
+                <label className={labelCls}>Cover Image</label>
+                <div
+                  onClick={() => coverImageRef.current?.click()}
+                  className="relative border-2 border-dashed border-[#E5E7EB] rounded-xl overflow-hidden cursor-pointer hover:border-primary-300 hover:bg-primary-50/40 transition-colors h-32 flex items-center justify-center"
+                >
+                  {coverImagePreview ? (
+                    <img src={coverImagePreview} alt="Cover preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-1.5 text-center px-4">
+                      <Upload className="w-6 h-6 text-gray-400" />
+                      <p className="text-sm font-medium text-[#374151]">Upload cover image</p>
+                      <p className="text-xs text-[#6B7280]">PNG, JPG, WebP — recommended 1200×400</p>
+                    </div>
+                  )}
+                  <input
+                    ref={coverImageRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleCoverImageChange}
+                  />
+                </div>
+                {coverImagePreview && (
+                  <button
+                    type="button"
+                    onClick={() => { setCoverImagePreview(""); setCoverImageFile(null); }}
+                    className="text-xs text-red-400 hover:text-red-600 mt-1 transition-colors"
+                  >
+                    Remove cover image
+                  </button>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>Full Name *</label>
@@ -548,36 +582,80 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
                 </div>
               </div>
 
-              {/* Logo upload */}
+              {/* Logo / Profile Image */}
               <div>
                 <label className={labelCls}>
                   {form.practiceType === "center" ? "Centre" : "Clinic"} Logo / Photo
                 </label>
-                <div
-                  onClick={() => logoInputRef.current?.click()}
-                  className="flex items-center gap-4 border-2 border-dashed border-[#E5E7EB] rounded-xl p-4 cursor-pointer hover:border-primary-300 hover:bg-primary-50/40 transition-colors"
-                >
-                  {logoPreview ? (
-                    <img src={logoPreview} alt="Logo preview" className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
-                  ) : (
-                    <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-center gap-4">
+                  <div
+                    onClick={() => profileImageRef.current?.click()}
+                    className="flex-shrink-0 w-20 h-20 rounded-2xl border-2 border-dashed border-[#E5E7EB] flex items-center justify-center cursor-pointer hover:border-primary-300 hover:bg-primary-50/40 transition-colors overflow-hidden"
+                  >
+                    {profileImagePreview ? (
+                      <img src={profileImagePreview} alt="Logo preview" className="w-full h-full object-cover" />
+                    ) : (
                       <Upload className="w-5 h-5 text-gray-400" />
-                    </div>
-                  )}
+                    )}
+                    <input
+                      ref={profileImageRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleProfileImageChange}
+                    />
+                  </div>
                   <div>
                     <p className="text-sm font-medium text-[#374151]">
-                      {logoPreview ? "Photo selected — click to change" : "Upload clinic logo or photo"}
+                      {profileImagePreview ? "Logo selected" : "Upload logo or photo"}
                     </p>
                     <p className="text-xs text-[#6B7280] mt-0.5">PNG, JPG, WebP — recommended 400×400</p>
+                    {profileImagePreview && (
+                      <button
+                        type="button"
+                        onClick={() => { setProfileImagePreview(""); setProfileImageFile(null); }}
+                        className="text-xs text-red-400 hover:text-red-600 mt-1 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
+                </div>
+              </div>
+
+              {/* Cover Image */}
+              <div>
+                <label className={labelCls}>Cover Image</label>
+                <div
+                  onClick={() => coverImageRef.current?.click()}
+                  className="relative border-2 border-dashed border-[#E5E7EB] rounded-xl overflow-hidden cursor-pointer hover:border-primary-300 hover:bg-primary-50/40 transition-colors h-32 flex items-center justify-center"
+                >
+                  {coverImagePreview ? (
+                    <img src={coverImagePreview} alt="Cover preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-1.5 text-center px-4">
+                      <Upload className="w-6 h-6 text-gray-400" />
+                      <p className="text-sm font-medium text-[#374151]">Upload cover image</p>
+                      <p className="text-xs text-[#6B7280]">PNG, JPG, WebP — recommended 1200×400</p>
+                    </div>
+                  )}
                   <input
-                    ref={logoInputRef}
+                    ref={coverImageRef}
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={handleLogoChange}
+                    onChange={handleCoverImageChange}
                   />
                 </div>
+                {coverImagePreview && (
+                  <button
+                    type="button"
+                    onClick={() => { setCoverImagePreview(""); setCoverImageFile(null); }}
+                    className="text-xs text-red-400 hover:text-red-600 mt-1 transition-colors"
+                  >
+                    Remove cover image
+                  </button>
+                )}
               </div>
 
               {/* Team Members */}
@@ -864,17 +942,21 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
         <div className="space-y-5">
           <h3 className="font-playfair text-lg font-bold text-[#1A1A2E]">Review Your Listing</h3>
           <div className="bg-[#FAFAF8] rounded-xl p-5 space-y-3 text-sm">
-            {/* Profile photo preview in review step */}
-            {!isClinicType && profileImagePreview && (
+            {/* Profile / logo preview in review step */}
+            {profileImagePreview && (
               <div className="flex gap-2 items-center">
-                <span className="font-semibold w-32 text-[#374151]">Profile Photo:</span>
-                <img src={profileImagePreview} alt="Profile" className="w-10 h-10 rounded-full object-cover" />
+                <span className="font-semibold w-32 text-[#374151]">{isClinicType ? "Logo:" : "Profile Photo:"}</span>
+                <img
+                  src={profileImagePreview}
+                  alt={isClinicType ? "Logo" : "Profile"}
+                  className={`w-10 h-10 object-cover ${isClinicType ? "rounded-lg" : "rounded-full"}`}
+                />
               </div>
             )}
-            {isClinicType && logoPreview && (
-              <div className="flex gap-2 items-center">
-                <span className="font-semibold w-32 text-[#374151]">Logo:</span>
-                <img src={logoPreview} alt="Logo" className="w-10 h-10 rounded-lg object-cover" />
+            {coverImagePreview && (
+              <div className="space-y-1">
+                <span className="font-semibold text-[#374151]">Cover Image:</span>
+                <img src={coverImagePreview} alt="Cover" className="w-full h-20 rounded-lg object-cover" />
               </div>
             )}
             <div className="flex gap-2">

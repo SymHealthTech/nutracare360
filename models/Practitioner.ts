@@ -9,7 +9,6 @@ export interface ITeamMember {
 
 export interface IClinicDetails {
   clinicName: string;
-  logo: string;
   establishedYear: number;
   totalPractitioners: number;
   teamMembers: ITeamMember[];
@@ -78,7 +77,6 @@ const TeamMemberSchema = new Schema<ITeamMember>(
 const ClinicDetailsSchema = new Schema<IClinicDetails>(
   {
     clinicName: String,
-    logo: String,
     establishedYear: Number,
     totalPractitioners: Number,
     teamMembers: [TeamMemberSchema],
