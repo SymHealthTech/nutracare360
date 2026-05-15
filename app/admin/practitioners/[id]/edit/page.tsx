@@ -26,6 +26,7 @@ export default async function AdminEditPractitionerPage({ params }: Props) {
     businessName: p.businessName || "",
     designation: p.designation || "",
     profileImage: p.profileImage || "",
+    coverImage: p.coverImage || "",
     clinicDetails: p.clinicDetails
       ? {
           clinicName: p.clinicDetails.clinicName || "",

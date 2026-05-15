@@ -29,21 +29,37 @@ function isOpenNow(hours: Record<string, { open: string; close: string; isClosed
   return currentMinutes >= openTime && currentMinutes < closeTime;
 }
 
+const OLD_DEFAULTS = { open: "9:00 AM", close: "6:00 PM" };
+
+function isDefaultHour(h: { open: string; close: string; isClosed: boolean } | undefined) {
+  if (!h) return true;
+  if (h.isClosed) return false;
+  return (!h.open || h.open === OLD_DEFAULTS.open) && (!h.close || h.close === OLD_DEFAULTS.close);
+}
+
+function resolvedTime(h: { open: string; close: string; isClosed: boolean } | undefined) {
+  if (!h || isDefaultHour(h)) return null;
+  return h.open && h.close ? `${h.open} – ${h.close}` : null;
+}
+
 export function WorkingHours({ hours }: { hours: Record<string, { open: string; close: string; isClosed: boolean }> }) {
-  const open = isOpenNow(hours);
+  const isOpen = isOpenNow(hours);
   const today = DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
 
   return (
     <div>
-      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-4 ${open ? "bg-accent-50 text-accent-700" : "bg-red-50 text-red-600"}`}>
-        <span className={`w-2 h-2 rounded-full ${open ? "bg-accent-500" : "bg-red-400"}`} />
-        {open ? "Open Now" : "Closed Now"}
-      </div>
+      {isOpen && (
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-4 bg-accent-50 text-accent-700">
+          <span className="w-2 h-2 rounded-full bg-accent-500" />
+          Open Now
+        </div>
+      )}
 
       <div className="space-y-2">
         {DAYS.map((day) => {
           const h = hours[day];
           const isToday = day === today;
+          const time = resolvedTime(h);
           return (
             <div key={day} className={`flex items-center justify-between py-2 px-3 rounded-lg ${isToday ? "bg-primary-50 border border-primary-100" : ""}`}>
               <span className={`text-sm ${isToday ? "font-semibold text-primary-700" : "text-[#374151]"} capitalize`}>
@@ -53,7 +69,7 @@ export function WorkingHours({ hours }: { hours: Record<string, { open: string; 
                 <span className="text-xs text-[#6B7280]">Closed</span>
               ) : (
                 <span className={`text-sm ${isToday ? "font-medium text-primary-700" : "text-[#374151]"}`}>
-                  {h?.open} – {h?.close}
+                  {time ?? "--:--"}
                 </span>
               )}
             </div>

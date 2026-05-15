@@ -247,7 +247,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
                 <h2 className="font-playfair text-xl font-bold text-[#1A1A2E] mb-4">About {displayName}</h2>
                 <p className="text-[#374151] leading-relaxed">{p.bio as string}</p>
                 <div className="grid grid-cols-2 gap-4 mt-5">
-                  {p.experience && (
+                  {(p.experience as number) > 0 && (
                     <div className="bg-primary-50 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-primary-600 font-playfair">{p.experience as number}+</div>
                       <div className="text-xs text-[#6B7280] mt-1">Years Experience</div>
@@ -456,7 +456,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
                 <h3 className="font-playfair text-lg font-bold text-[#1A1A2E] mb-3">Quick Info</h3>
                 <div className="space-y-2 text-sm">
 
-                  {p.experience && (
+                  {(p.experience as number) > 0 && (
                     <div className="flex justify-between">
                       <span className="text-[#6B7280]">Experience</span>
                       <span className="font-medium text-[#374151]">{p.experience as number} years</span>

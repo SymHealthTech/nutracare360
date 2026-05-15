@@ -60,7 +60,7 @@ interface FormData {
 }
 
 const defaultWorkingHours = Object.fromEntries(
-  DAYS.map((d) => [d, { open: "9:00 AM", close: "6:00 PM", isClosed: d === "sunday" }])
+  DAYS.map((d) => [d, { open: "", close: "", isClosed: false }])
 ) as Record<string, WorkingHour>;
 
 const emptyTeamMember = (): TeamMember => ({ name: "", designation: "", photo: "", specialties: "" });
