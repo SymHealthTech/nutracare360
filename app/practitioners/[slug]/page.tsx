@@ -106,9 +106,9 @@ export default async function PractitionerProfilePage({ params }: Props) {
                 <div className="px-6 pb-6">
                   <div className="flex items-end gap-4 -mt-10 mb-4">
                     <div className="relative flex-shrink-0">
-                      <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-primary-100">
+                      <div className="w-28 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-white">
                         {p.profileImage ? (
-                          <Image src={p.profileImage as string} alt={displayName} width={80} height={80} className="w-full h-full object-cover" />
+                          <Image src={p.profileImage as string} alt={displayName} width={112} height={80} className="w-full h-full object-contain" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary-600">
                             {displayName.charAt(0)}
@@ -275,7 +275,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
                         {service.description && <p className="text-xs text-[#6B7280] mt-0.5">{service.description}</p>}
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <div className="text-primary-600 font-bold text-sm">CAD ${service.price}</div>
+                        {service.price && <div className="text-primary-600 font-bold text-sm">CAD ${service.price}</div>}
                         {service.duration && (
                           <div className="flex items-center gap-1 text-xs text-[#6B7280] justify-end mt-0.5">
                             <Clock className="w-3 h-3" />{service.duration}

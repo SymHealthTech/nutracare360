@@ -39,14 +39,14 @@ export function PractitionerCard({ practitioner: p }: PractitionerCardProps) {
       <div className="p-5 flex-1">
         <div className="flex items-start gap-4">
           <div className="relative flex-shrink-0">
-            <div className={`w-16 h-16 overflow-hidden bg-gray-100 ${isClinic ? "rounded-xl" : "rounded-full"}`}>
+            <div className={`w-16 h-16 overflow-hidden ${isClinic ? "rounded-xl bg-white" : "rounded-full bg-gray-100"}`}>
               {displayImage ? (
                 <Image
                   src={displayImage}
                   alt={displayName}
                   width={64}
                   height={64}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full ${isClinic ? "object-contain" : "object-cover"}`}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-xl font-bold">
