@@ -548,6 +548,16 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
                   />
                 </div>
               </div>
+              <div>
+                <label className={labelCls}>Business / Clinic Name</label>
+                <input
+                  className={inputCls}
+                  value={form.businessName}
+                  onChange={(e) => update("businessName", e.target.value)}
+                  placeholder="Jane Smith Naturopathy"
+                />
+                <p className="text-xs text-[#6B7280] mt-1">Your practice or business name, if different from your personal name.</p>
+              </div>
             </div>
           )}
 
@@ -977,6 +987,12 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
               <div className="flex gap-2">
                 <span className="font-semibold w-32 text-[#374151]">Team:</span>
                 <span>{form.clinicDetails.teamMembers.filter((m) => m.name).length} member(s)</span>
+              </div>
+            )}
+            {!isClinicType && form.businessName && (
+              <div className="flex gap-2">
+                <span className="font-semibold w-32 text-[#374151]">Business Name:</span>
+                <span>{form.businessName}</span>
               </div>
             )}
             {!isClinicType && form.designation && (
