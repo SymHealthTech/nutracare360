@@ -105,7 +105,7 @@ export default async function PractitionerProfilePage({ params }: Props) {
                 {/* Logo + info below cover */}
                 <div className="px-6 pb-6">
                   <div className="flex items-end gap-4 -mt-10 mb-4">
-                    <div className="relative flex-shrink-0">
+                    <div className="relative flex-shrink-0 hidden md:block">
                       <div className="w-28 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-white">
                         {p.profileImage ? (
                           <Image src={p.profileImage as string} alt={displayName} width={112} height={80} className="w-full h-full object-contain" />
