@@ -307,9 +307,15 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
 
       if (profileImageFile) {
         profileImageUrl = await uploadToCloudinary(profileImageFile);
+      } else if (!profileImagePreview) {
+        // User removed the existing image — clear it
+        profileImageUrl = "";
       }
       if (coverImageFile) {
         coverImageUrl = await uploadToCloudinary(coverImageFile);
+      } else if (!coverImagePreview) {
+        // User removed the existing image — clear it
+        coverImageUrl = "";
       }
       for (let i = 0; i < memberPhotoFiles.length; i++) {
         if (memberPhotoFiles[i]) {
