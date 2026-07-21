@@ -172,8 +172,8 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
     bio: initialData?.bio || "",
     experience: String(initialData?.experience || ""),
     languages: Array.isArray(initialData?.languages) ? initialData.languages.join(", ") : (initialData?.languages || ""),
-    education: initialData?.education?.map((e) => ({ degree: e.degree, institution: e.institution, year: String(e.year) })) || [{ degree: "", institution: "", year: "" }],
-    certifications: initialData?.certifications?.map((c) => ({ name: c.name, issuedBy: c.issuedBy, year: String(c.year) })) || [{ name: "", issuedBy: "", year: "" }],
+    education: initialData?.education?.map((e) => ({ degree: e.degree, institution: e.institution, year: e.year != null ? String(e.year) : "" })) || [{ degree: "", institution: "", year: "" }],
+    certifications: initialData?.certifications?.map((c) => ({ name: c.name, issuedBy: c.issuedBy, year: c.year != null ? String(c.year) : "" })) || [{ name: "", issuedBy: "", year: "" }],
     workingHours: initialData?.workingHours || defaultWorkingHours,
     services: initialData?.services || [{ name: "", duration: "", price: "", description: "" }],
   });
@@ -329,8 +329,8 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
         name: isClinicType ? form.clinicDetails.clinicName : form.name,
         experience: parseInt(form.experience) || 0,
         languages: form.languages.split(",").map((l) => l.trim()).filter(Boolean),
-        education: form.education.filter((e) => e.degree),
-        certifications: form.certifications.filter((c) => c.name),
+        education: form.education.filter((e) => e.degree).map((e) => ({ degree: e.degree, institution: e.institution, year: parseInt(e.year) || undefined })),
+        certifications: form.certifications.filter((c) => c.name).map((c) => ({ name: c.name, issuedBy: c.issuedBy, year: parseInt(c.year) || undefined })),
         services: form.services.filter((s) => s.name),
         clinicDetails: isClinicType
           ? {
