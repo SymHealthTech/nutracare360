@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CATEGORIES, CITIES, PROVINCES } from "@/lib/constants";
+import { trackEvent } from "@/lib/analytics";
 import { CheckCircle, Plus, Trash2, ChevronRight, ChevronLeft, Award, Upload, UserPlus, X } from "lucide-react";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
@@ -177,6 +178,14 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
     workingHours: initialData?.workingHours || defaultWorkingHours,
     services: initialData?.services || [{ name: "", duration: "", price: "", description: "" }],
   });
+
+  // Fire once when a prospective practitioner opens the public signup form
+  // (not admin create/edit, not an OTP-verified self-update).
+  const isPublicSignup = !isAdmin && !selfEditToken && !editId;
+  useEffect(() => {
+    if (isPublicSignup) trackEvent("listing_signup_started");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const update = (key: keyof FormData, value: unknown) => setForm((f) => ({ ...f, [key]: value }));
   const updateAddr = (key: string, val: string) => setForm((f) => ({ ...f, address: { ...f.address, [key]: val } }));
@@ -385,6 +394,7 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
           router.push(isEdit ? `/admin/practitioners/${editId}` : "/admin/practitioners");
           router.refresh();
         } else {
+          trackEvent("listing_signup_submitted", { practice_type: form.practiceType });
           setSubmitted(true);
         }
       } else {

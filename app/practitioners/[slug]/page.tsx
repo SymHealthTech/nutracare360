@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { SendEmailButton } from "@/components/practitioners/SendEmailButton";
+import { ProfileViewTracker } from "@/components/analytics/ProfileViewTracker";
+import { ContactLink } from "@/components/analytics/ContactLink";
 
 interface Props { params: { slug: string } }
 
@@ -52,8 +54,13 @@ export default async function PractitionerProfilePage({ params }: Props) {
   const displayName = isClinic ? (clinicDetails?.clinicName ?? (p.name as string)) : (p.name as string);
   const teamMembers = clinicDetails?.teamMembers?.filter((m) => m.name) ?? [];
 
+  // Shared identifiers for analytics conversion events.
+  const analyticsSlug = params.slug;
+  const primaryCategory = (p.categories as string[])?.[0] ?? "";
+
   return (
     <div className="pt-16 pb-20 min-h-screen bg-[#FAFAF8]">
+      <ProfileViewTracker slug={analyticsSlug} category={primaryCategory} />
       {/* Hero banner */}
       <div className={`relative w-full overflow-hidden bg-gradient-to-br from-primary-800 via-primary-600 to-emerald-500 ${isClinic ? "h-20 md:h-24" : "h-48 md:h-56"}`}>
         {!isClinic && p.coverImage && (
@@ -378,40 +385,69 @@ export default async function PractitionerProfilePage({ params }: Props) {
                 <h3 className="font-playfair text-lg font-bold text-[#1A1A2E] mb-4">Contact</h3>
                 <div className="space-y-3">
                   {p.phone && (
-                    <a href={`tel:${p.phone}`} className="flex items-center gap-3 text-sm text-[#1A1A2E] hover:text-primary-500 transition-colors">
+                    <ContactLink
+                      href={`tel:${p.phone}`}
+                      method="phone"
+                      practitionerSlug={analyticsSlug}
+                      category={primaryCategory}
+                      className="flex items-center gap-3 text-sm text-[#1A1A2E] hover:text-primary-500 transition-colors"
+                    >
                       <div className="w-8 h-8 bg-primary-50 rounded-lg flex items-center justify-center">
                         <Phone className="w-4 h-4 text-primary-500" />
                       </div>
                       {p.phone as string}
-                    </a>
+                    </ContactLink>
                   )}
                   {p.email && (
-                    <a href={`mailto:${p.email}`} className="flex items-center gap-3 text-sm text-[#1A1A2E] hover:text-primary-500 transition-colors">
+                    <ContactLink
+                      href={`mailto:${p.email}`}
+                      method="email"
+                      practitionerSlug={analyticsSlug}
+                      category={primaryCategory}
+                      className="flex items-center gap-3 text-sm text-[#1A1A2E] hover:text-primary-500 transition-colors"
+                    >
                       <div className="w-8 h-8 bg-primary-50 rounded-lg flex items-center justify-center">
                         <Mail className="w-4 h-4 text-primary-500" />
                       </div>
                       {p.email as string}
-                    </a>
+                    </ContactLink>
                   )}
                   {p.website && (
-                    <a href={p.website as string} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-primary-500 hover:text-primary-600 transition-colors">
+                    <ContactLink
+                      href={p.website as string}
+                      method="website"
+                      practitionerSlug={analyticsSlug}
+                      category={primaryCategory}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 text-sm text-primary-500 hover:text-primary-600 transition-colors"
+                    >
                       <div className="w-8 h-8 bg-primary-50 rounded-lg flex items-center justify-center">
                         <Globe className="w-4 h-4 text-primary-500" />
                       </div>
                       Visit Website
-                    </a>
+                    </ContactLink>
                   )}
                 </div>
 
                 {p.phone && (
-                  <a
+                  <ContactLink
                     href={`tel:${p.phone}`}
+                    method="phone"
+                    practitionerSlug={analyticsSlug}
+                    category={primaryCategory}
                     className="mt-4 block w-full bg-primary-500 hover:bg-primary-600 text-white text-center py-3 rounded-xl font-semibold text-sm transition-colors"
                   >
                     Call Now
-                  </a>
+                  </ContactLink>
                 )}
-                {p.email && <SendEmailButton email={p.email as string} />}
+                {p.email && (
+                  <SendEmailButton
+                    email={p.email as string}
+                    practitionerSlug={analyticsSlug}
+                    category={primaryCategory}
+                  />
+                )}
               </div>
 
               {/* Location card */}

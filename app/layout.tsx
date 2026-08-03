@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { Providers } from "./providers";
 import { SITE_NAME, SITE_DESCRIPTION } from "@/lib/constants";
+
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const analyticsEnabled = Boolean(gaMeasurementId) && process.env.NODE_ENV === "production";
 
 export const metadata: Metadata = {
   title: {
@@ -42,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>{children}</main>
           <ConditionalFooter />
         </Providers>
+        {analyticsEnabled && <GoogleAnalytics gaId={gaMeasurementId!} />}
       </body>
     </html>
   );

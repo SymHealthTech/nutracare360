@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, MapPin } from "lucide-react";
 import { CATEGORIES, CITIES } from "@/lib/constants";
+import { trackEvent } from "@/lib/analytics";
 
 export function HeroSearch() {
   const [category, setCategory] = useState("");
@@ -15,6 +16,11 @@ export function HeroSearch() {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
     if (city) params.set("city", city);
+    trackEvent("practitioner_search_submitted", {
+      query: "",
+      category: category || "any",
+      city: city || "any",
+    });
     router.push(`/search?${params.toString()}`);
   };
 

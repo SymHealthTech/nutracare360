@@ -2,12 +2,24 @@
 
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
-export function SendEmailButton({ email }: { email: string }) {
+interface Props {
+  email: string;
+  practitionerSlug: string;
+  category: string;
+}
+
+export function SendEmailButton({ email, practitionerSlug, category }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleSend = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    trackEvent("practitioner_contact_clicked", {
+      practitioner_slug: practitionerSlug,
+      category,
+      contact_method: "email",
+    });
     window.location.href = `mailto:${email}`;
   };
 

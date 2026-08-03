@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Search, Leaf } from "lucide-react";
 import Image from "next/image";
+import { trackEvent } from "@/lib/analytics";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -76,6 +77,7 @@ export function Navbar() {
             </Link>
             <Link
               href="/join-us"
+              onClick={() => trackEvent("listing_cta_clicked", { cta_location: "navbar_desktop" })}
               className="bg-secondary-500 hover:bg-secondary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
             >
               Join Us — Free
@@ -109,6 +111,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/join-us"
+            onClick={() => trackEvent("listing_cta_clicked", { cta_location: "navbar_mobile" })}
             className="block bg-secondary-500 text-white text-center px-4 py-2.5 rounded-lg text-sm font-semibold"
           >
             Join Us — Free Listing

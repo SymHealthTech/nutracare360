@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PractitionerCard } from "@/components/practitioners/PractitionerCard";
 import { CATEGORIES, CITIES, PROVINCES } from "@/lib/constants";
+import { trackEvent } from "@/lib/analytics";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 
 function SearchContent() {
@@ -23,6 +24,9 @@ function SearchContent() {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sort, setSort] = useState("rating");
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Skip the analytics event on the initial load — a hero-search redirect
+  // already fires its own event, and landing directly on /search isn't a search.
+  const hasRefinedSearch = useRef(false);
 
   const handleNameChange = (value: string) => {
     setNameQuery(value);
@@ -51,6 +55,18 @@ function SearchContent() {
       setLoading(false);
     };
     fetchData();
+
+    // Report user-initiated searches/refinements (name, filters, sort), not
+    // the first render. Name changes arrive already debounced via debouncedName.
+    if (hasRefinedSearch.current) {
+      trackEvent("practitioner_search_submitted", {
+        query: debouncedName || "",
+        category: category || "any",
+        city: city || "any",
+      });
+    } else {
+      hasRefinedSearch.current = true;
+    }
   }, [debouncedName, category, city, province, verifiedOnly, sort]);
 
   const handleClear = () => {
