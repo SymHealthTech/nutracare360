@@ -8,7 +8,8 @@ import Blog from "@/models/Blog";
 import { HeroSearch } from "@/components/home/HeroSearch";
 import SuccessStoriesSlider from "@/components/about/SuccessStoriesSlider";
 import { FeaturedClinicCard } from "@/components/home/FeaturedClinicCard";
-import { CATEGORIES, CITIES } from "@/lib/constants";
+import { CATEGORIES, FEATURED_CITIES } from "@/lib/constants";
+import { slugify } from "@/lib/utils";
 import { Search, Heart, Phone, ArrowRight, Users, BookOpen, MapPin } from "lucide-react";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
@@ -30,7 +31,7 @@ export default async function HomePage() {
   const { practitioners, blogs } = await getData();
 
   const quickCategories = CATEGORIES.slice(0, 8);
-  const featuredCities = CITIES.slice(0, 12);
+  const featuredCities = FEATURED_CITIES;
 
   return (
     <div className="pt-16">
@@ -182,7 +183,7 @@ export default async function HomePage() {
             {featuredCities.map((city) => (
               <Link
                 key={city}
-                href={`/cities/${city.toLowerCase().replace(/\s+/g, "-")}`}
+                href={`/cities/${slugify(city)}`}
                 className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-center hover:border-primary-300 hover:shadow-md transition-all group"
               >
                 <MapPin className="w-5 h-5 text-primary-500 mx-auto mb-2 group-hover:text-primary-600" />

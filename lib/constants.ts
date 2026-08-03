@@ -40,12 +40,50 @@ export const CATEGORIES = [
   { name: "Yoga Therapy", slug: "yoga", icon: "Sun", description: "Therapeutic yoga for mind-body healing" },
 ];
 
-export const CITIES = [
-  "Toronto", "Vancouver", "Calgary", "Edmonton", "Ottawa",
-  "Winnipeg", "Quebec City", "Hamilton", "Kitchener", "London",
-  "Victoria", "Halifax", "Saskatoon", "Regina", "Kelowna",
-  "Barrie", "Sudbury", "Sherbrooke", "Abbotsford", "Kingston",
-  "Mississauga", "Brampton", "Surrey", "Burnaby", "Richmond",
+// Source list grouped by province/territory for maintainability.
+// `CITIES` (exported below) is sorted alphabetically for easy searching in dropdowns.
+const CITY_LIST = [
+  // Ontario
+  "Toronto", "Ottawa", "Mississauga", "Brampton", "Hamilton",
+  "London", "Markham", "Vaughan", "Kitchener", "Windsor",
+  "Richmond Hill", "Oakville", "Burlington", "Greater Sudbury", "Oshawa",
+  "Barrie", "St. Catharines", "Guelph", "Cambridge", "Whitby",
+  "Kingston", "Waterloo", "Thunder Bay", "Brantford", "Milton",
+  "Niagara Falls", "Peterborough", "Sault Ste. Marie",
+  // British Columbia
+  "Vancouver", "Surrey", "Burnaby", "Richmond", "Abbotsford",
+  "Coquitlam", "Kelowna", "Victoria", "Langley", "Saanich",
+  "Delta", "Kamloops", "Nanaimo", "Chilliwack", "Prince George", "Vernon",
+  // Alberta
+  "Calgary", "Edmonton", "Red Deer", "Lethbridge", "St. Albert",
+  "Medicine Hat", "Grande Prairie", "Airdrie", "Spruce Grove",
+  "Okotoks", "Fort McMurray",
+  // Quebec
+  "Montreal", "Quebec City", "Laval", "Gatineau", "Longueuil",
+  "Sherbrooke", "Saguenay", "Lévis", "Trois-Rivières", "Terrebonne",
+  // Manitoba
+  "Winnipeg", "Brandon", "Steinbach",
+  // Saskatchewan
+  "Saskatoon", "Regina", "Prince Albert", "Moose Jaw",
+  // Nova Scotia
+  "Halifax", "Sydney", "Dartmouth",
+  // New Brunswick
+  "Moncton", "Saint John", "Fredericton",
+  // Newfoundland and Labrador
+  "St. John's", "Corner Brook",
+  // Prince Edward Island
+  "Charlottetown", "Summerside",
+  // Territories
+  "Whitehorse", "Yellowknife", "Iqaluit",
+];
+
+export const CITIES = [...CITY_LIST].sort((a, b) => a.localeCompare(b, "en"));
+
+// Curated major cities for the homepage "Find Practitioners in Your City" grid.
+export const FEATURED_CITIES = [
+  "Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton",
+  "Ottawa", "Winnipeg", "Quebec City", "Hamilton", "Halifax",
+  "Saskatoon", "Victoria",
 ];
 
 export const PROVINCES = [

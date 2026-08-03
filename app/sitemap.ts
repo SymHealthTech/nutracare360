@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Practitioner from "@/models/Practitioner";
 import Blog from "@/models/Blog";
 import { CATEGORIES, CITIES } from "@/lib/constants";
+import { slugify } from "@/lib/utils";
 
 const BASE = "https://nutracare360.ca";
 
@@ -27,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const cityRoutes: MetadataRoute.Sitemap = CITIES.map((city) => ({
-    url: `${BASE}/cities/${city.toLowerCase().replace(/\s+/g, "-")}`,
+    url: `${BASE}/cities/${slugify(city)}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,

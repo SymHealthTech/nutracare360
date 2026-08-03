@@ -8,10 +8,12 @@ export function cn(...inputs: ClassValue[]) {
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "") // strip accents (é → e)
+    .replace(/[^a-z0-9\s-]/g, "") // drop periods, apostrophes, etc.
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
-    .trim();
+    .replace(/^-+|-+$/g, "");
 }
 
 export function formatDate(date: Date | string): string {

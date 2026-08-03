@@ -54,6 +54,7 @@ export interface IPractitioner extends Document {
   rating: number;
   reviewCount: number;
   status: "pending" | "approved" | "rejected" | "suspended";
+  rejectionReason?: string;
   listingType: "free" | "premium";
   isFeatured: boolean;
   isVerified: boolean;
@@ -128,6 +129,7 @@ const PractitionerSchema = new Schema<IPractitioner>(
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
     status: { type: String, enum: ["pending", "approved", "rejected", "suspended"], default: "pending", index: true },
+    rejectionReason: String,
     listingType: { type: String, enum: ["free", "premium"], default: "free" },
     isFeatured: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },

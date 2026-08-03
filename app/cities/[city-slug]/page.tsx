@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { connectDB } from "@/lib/db";
 import Practitioner from "@/models/Practitioner";
 import { CITIES } from "@/lib/constants";
+import { slugify } from "@/lib/utils";
 import { CityPageClient } from "./CityPageClient";
 import type { Metadata } from "next";
 
@@ -12,7 +13,7 @@ export const revalidate = 60;
 interface Props { params: { "city-slug": string } }
 
 function slugToCity(slug: string): string | undefined {
-  return CITIES.find((c) => c.toLowerCase().replace(/\s+/g, "-") === slug);
+  return CITIES.find((c) => slugify(c) === slug);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

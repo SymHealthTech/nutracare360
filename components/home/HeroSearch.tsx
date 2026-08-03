@@ -26,13 +26,13 @@ export function HeroSearch() {
 
   return (
     <form onSubmit={handleSearch} className="w-full max-w-3xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-2xl p-2 flex flex-col sm:flex-row gap-2">
-        <div className="flex-1 flex items-center gap-2 px-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-3 flex flex-col sm:flex-row gap-2">
+        <div className="flex-1 flex items-center gap-2 px-4 py-1">
           <Search className="w-5 h-5 text-[#6B7280] flex-shrink-0" />
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="flex-1 py-3 text-[#1A1A2E] bg-transparent outline-none text-sm appearance-none cursor-pointer"
+            className="flex-1 px-2 py-3.5 text-[#1A1A2E] bg-transparent outline-none text-sm appearance-none cursor-pointer"
           >
             <option value="">All therapy types...</option>
             {CATEGORIES.map((c) => (
@@ -45,12 +45,12 @@ export function HeroSearch() {
 
         <div className="hidden sm:block w-px bg-[#E5E7EB] my-2" />
 
-        <div className="flex-1 flex items-center gap-2 px-4">
+        <div className="flex-1 flex items-center gap-2 px-4 py-1">
           <MapPin className="w-5 h-5 text-[#6B7280] flex-shrink-0" />
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="flex-1 py-3 text-[#1A1A2E] bg-transparent outline-none text-sm appearance-none cursor-pointer"
+            className="flex-1 px-2 py-3.5 text-[#1A1A2E] bg-transparent outline-none text-sm appearance-none cursor-pointer"
           >
             <option value="">Any city...</option>
             {CITIES.map((c) => (
