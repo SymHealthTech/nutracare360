@@ -39,6 +39,89 @@ interface PractitionerLike {
 }
 
 /**
+ * Send a practitioner/clinic a private preview link so they can review their
+ * listing before it goes public. The listing stays hidden until they confirm.
+ */
+export async function sendReviewLinkEmail(practitioner: PractitionerLike, previewUrl: string) {
+  if (!practitioner.email) return;
+  const displayName = practitioner.businessName || practitioner.name || "there";
+
+  const body = `
+    <p style="color: #374151; font-size: 15px; margin: 0 0 8px;">Hi <strong>${displayName}</strong>,</p>
+    <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 0 0 20px;">
+      We've prepared your listing on ${SITE_NAME} and would like you to review it before it goes live.
+      Nothing is public yet — please take a look and confirm when you're happy with it.
+    </p>
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
+      <p style="color: #166534; font-size: 14px; margin: 0 0 12px;">👀 Preview your listing, then click <strong>Confirm &amp; Publish</strong> on the page to make it public.</p>
+      ${button(previewUrl, "Review My Listing")}
+    </div>
+    <p style="color: #6b7280; font-size: 13px; line-height: 1.6; margin: 0; word-break: break-all;">
+      If the button doesn't work, copy and paste this link into your browser:<br />
+      <a href="${previewUrl}" style="color: #2d6a4f;">${previewUrl}</a>
+    </p>
+    <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 16px 0 0;">
+      This preview link is private to you and will expire in one month.
+    </p>
+  `;
+
+  const text = [
+    `Hi ${displayName},`,
+    "",
+    `We've prepared your listing on ${SITE_NAME} and would like you to review it before it goes live. Nothing is public yet — please take a look and confirm when you're happy with it.`,
+    "",
+    "Preview your listing here, then click Confirm & Publish on the page to make it public:",
+    previewUrl,
+    "",
+    "This preview link is private to you and will expire in one month.",
+    "",
+    `— The ${SITE_NAME} Team`,
+  ].join("\n");
+
+  await mailer.sendMail({
+    from: FROM,
+    to: practitioner.email,
+    subject: `Please review your ${SITE_NAME} listing before it goes live`,
+    html: shell("Listing Ready for Your Review", body),
+    text,
+  });
+}
+
+/**
+ * Notify the admin inbox that a practitioner requested changes to their draft
+ * listing from the preview page.
+ */
+export async function sendChangeRequestEmail(practitioner: PractitionerLike, message: string) {
+  const displayName = practitioner.businessName || practitioner.name || "A practitioner";
+  const body = `
+    <p style="color: #374151; font-size: 15px; margin: 0 0 8px;"><strong>${displayName}</strong> reviewed their draft listing and requested changes before publishing.</p>
+    ${message
+      ? `<div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 16px 20px; margin: 16px 0;">
+           <p style="color: #92400e; font-size: 13px; font-weight: 600; margin: 0 0 6px;">Requested changes:</p>
+           <p style="color: #78350f; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
+         </div>`
+      : `<p style="color: #6b7280; font-size: 14px; margin: 16px 0;">No specific message was provided.</p>`}
+    <p style="color: #6b7280; font-size: 13px; margin: 0;">Contact: ${practitioner.email || "—"}</p>
+  `;
+
+  const text = [
+    `${displayName} reviewed their draft listing and requested changes before publishing.`,
+    "",
+    message ? `Requested changes:\n${message}` : "No specific message was provided.",
+    "",
+    `Contact: ${practitioner.email || "—"}`,
+  ].join("\n");
+
+  await mailer.sendMail({
+    from: FROM,
+    to: process.env.ADMIN_EMAIL || process.env.SMTP_USER,
+    subject: `Change request: ${displayName}'s listing`,
+    html: shell("Listing Change Request", body),
+    text,
+  });
+}
+
+/**
  * Notify a practitioner/clinic that their listing was approved and is now live.
  */
 export async function sendApprovalEmail(practitioner: PractitionerLike) {
@@ -63,11 +146,25 @@ export async function sendApprovalEmail(practitioner: PractitionerLike) {
     </p>
   `;
 
+  const text = [
+    `Hi ${displayName},`,
+    "",
+    `Great news — your listing on ${SITE_NAME} has been approved and is now live. Prospective clients across Canada can find you in our directory.`,
+    "",
+    "View your listing:",
+    listingUrl,
+    "",
+    "Need to update your details? You can request an edit anytime from your listing page using the email address on file.",
+    "",
+    `— The ${SITE_NAME} Team`,
+  ].join("\n");
+
   await mailer.sendMail({
     from: FROM,
     to: practitioner.email,
     subject: `You're now listed on ${SITE_NAME} 🎉`,
     html: shell("Listing Approved", body),
+    text,
   });
 }
 
@@ -99,10 +196,23 @@ export async function sendRejectionEmail(practitioner: PractitionerLike, reason?
     ${button(`${SITE_URL}/join-us`, "Re-submit Your Listing")}
   `;
 
+  const text = [
+    `Hi ${displayName},`,
+    "",
+    `Thank you for submitting your listing to ${SITE_NAME}. After review, we're unable to approve it in its current form.`,
+    ...(reason ? ["", `Reason: ${reason}`] : []),
+    "",
+    `You're welcome to address the above and re-submit through our Join Us page: ${SITE_URL}/join-us`,
+    `If you have any questions, reply to this note or reach us via our contact page: ${SITE_URL}/contact`,
+    "",
+    `— The ${SITE_NAME} Team`,
+  ].join("\n");
+
   await mailer.sendMail({
     from: FROM,
     to: practitioner.email,
     subject: `Update on your ${SITE_NAME} listing`,
     html: shell("Listing Review Update", body),
+    text,
   });
 }

@@ -22,6 +22,7 @@ export default async function AdminPractitionersPage({ searchParams }: Props) {
   const counts = {
     all: await Practitioner.countDocuments(),
     pending: await Practitioner.countDocuments({ status: "pending" }),
+    awaiting: await Practitioner.countDocuments({ status: "awaiting_confirmation" }),
     approved: await Practitioner.countDocuments({ status: "approved" }),
     rejected: await Practitioner.countDocuments({ status: "rejected" }),
   };
@@ -29,6 +30,7 @@ export default async function AdminPractitionersPage({ searchParams }: Props) {
   const statusTabs = [
     { label: "All", value: "", count: counts.all },
     { label: "Pending", value: "pending", count: counts.pending },
+    { label: "Awaiting confirmation", value: "awaiting_confirmation", count: counts.awaiting },
     { label: "Approved", value: "approved", count: counts.approved },
     { label: "Rejected", value: "rejected", count: counts.rejected },
   ];
@@ -112,10 +114,11 @@ export default async function AdminPractitionersPage({ searchParams }: Props) {
                       <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
                         p.status === "approved" ? "bg-accent-50 text-accent-700"
                         : p.status === "pending" ? "bg-yellow-50 text-yellow-700"
+                        : p.status === "awaiting_confirmation" ? "bg-amber-50 text-amber-700"
                         : p.status === "rejected" ? "bg-red-50 text-red-700"
                         : "bg-gray-100 text-gray-600"
                       }`}>
-                        {p.status}
+                        {p.status === "awaiting_confirmation" ? "awaiting confirmation" : p.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-xs text-[#6B7280] hidden xl:table-cell">

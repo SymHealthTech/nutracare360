@@ -118,6 +118,9 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
+  // Admin-create only: "direct" publishes immediately, "review" sends the
+  // practitioner a preview link to confirm before it goes live.
+  const [publishMode, setPublishMode] = useState<"direct" | "review">("direct");
 
   // Preview state — pre-populate from initialData URLs
   const [profileImagePreview, setProfileImagePreview] = useState<string>(initialData?.profileImage || "");
@@ -356,7 +359,10 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
                 .map((m) => ({ ...m, specialties: m.specialties.split(",").map((s) => s.trim()).filter(Boolean) })),
             }
           : undefined,
-        ...(isAdmin ? { status: "approved" } : {}),
+        // Admin edits keep the existing approve-on-save behaviour; admin creates
+        // are driven by the chosen publish mode instead.
+        ...(isAdmin && editId ? { status: "approved" } : {}),
+        ...(isAdmin && !editId ? { publishMode } : {}),
       };
 
       // Self-service OTP-verified update
@@ -391,7 +397,15 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
 
       if (res.ok) {
         if (isAdmin) {
-          router.push(isEdit ? `/admin/practitioners/${editId}` : "/admin/practitioners");
+          if (isEdit) {
+            router.push(`/admin/practitioners/${editId}`);
+          } else {
+            // Land on the new listing's detail page so the admin can grab the
+            // preview link when a confirmation was requested.
+            const data = await res.json().catch(() => ({}));
+            const newId = data?.practitioner?._id;
+            router.push(newId ? `/admin/practitioners/${newId}` : "/admin/practitioners");
+          }
           router.refresh();
         } else {
           trackEvent("listing_signup_submitted", { practice_type: form.practiceType });
@@ -1023,11 +1037,43 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
             <div className="flex gap-2"><span className="font-semibold w-32 text-[#374151]">Categories:</span><span>{form.categories.join(", ")}</span></div>
             <div className="flex gap-2"><span className="font-semibold w-32 text-[#374151]">Services:</span><span>{form.services.filter(s => s.name).length} service(s)</span></div>
           </div>
-          {isAdmin && (
+          {isAdmin && editId && (
             <div className="bg-accent-50 border border-accent-100 rounded-xl p-4 text-sm text-accent-800">
-              {editId
-                ? <><strong>Admin mode:</strong> Changes will be saved immediately.</>
-                : <><strong>Admin mode:</strong> This listing will be created with <strong>Approved</strong> status immediately.</>}
+              <strong>Admin mode:</strong> Changes will be saved immediately.
+            </div>
+          )}
+          {isAdmin && !editId && (
+            <div className="space-y-3">
+              <p className="text-xs font-semibold text-[#374151] uppercase tracking-wider">Publishing</p>
+              <label className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition-colors ${publishMode === "direct" ? "border-primary-400 bg-primary-50" : "border-[#E5E7EB] hover:border-primary-200"}`}>
+                <input
+                  type="radio"
+                  name="publishMode"
+                  className="mt-1 accent-primary-500"
+                  checked={publishMode === "direct"}
+                  onChange={() => setPublishMode("direct")}
+                />
+                <span className="text-sm">
+                  <span className="font-semibold text-[#1A1A2E]">Publish immediately</span>
+                  <span className="block text-[#6B7280] mt-0.5">The listing goes live on the website right away.</span>
+                </span>
+              </label>
+              <label className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition-colors ${publishMode === "review" ? "border-primary-400 bg-primary-50" : "border-[#E5E7EB] hover:border-primary-200"}`}>
+                <input
+                  type="radio"
+                  name="publishMode"
+                  className="mt-1 accent-primary-500"
+                  checked={publishMode === "review"}
+                  onChange={() => setPublishMode("review")}
+                />
+                <span className="text-sm">
+                  <span className="font-semibold text-[#1A1A2E]">Send a confirmation link first</span>
+                  <span className="block text-[#6B7280] mt-0.5">
+                    The listing stays hidden and a private preview link is emailed to{" "}
+                    <strong>{form.email || "the practitioner"}</strong>. It only goes live after they confirm.
+                  </span>
+                </span>
+              </label>
             </div>
           )}
           {!isAdmin && !selfEditToken && (
@@ -1087,7 +1133,13 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
             disabled={submitting}
             className="flex items-center gap-2 bg-accent-500 hover:bg-accent-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-60"
           >
-            {submitting ? "Saving..." : editId ? "Save Changes →" : isAdmin ? "Create Listing →" : "Submit Listing →"}
+            {submitting
+              ? "Saving..."
+              : editId
+                ? "Save Changes →"
+                : isAdmin
+                  ? publishMode === "review" ? "Create & Send Link →" : "Create Listing →"
+                  : "Submit Listing →"}
           </button>
         )}
       </div>

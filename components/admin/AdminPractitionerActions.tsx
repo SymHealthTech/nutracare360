@@ -38,19 +38,22 @@ export function AdminPractitionerActions({ id, currentStatus }: Props) {
     </button>
   );
 
+  // For a listing still awaiting the practitioner's confirmation, the admin can
+  // override and publish it directly ("Publish now").
+  const approveLabel = currentStatus === "awaiting_confirmation" ? "Publish now" : "Approve";
   const approveButton = (
     <button
       onClick={() => updateStatus("approved")}
       disabled={!!loading}
       className="text-xs bg-accent-50 text-accent-700 px-2.5 py-1 rounded-lg font-medium hover:bg-accent-100 transition-colors flex items-center gap-1 disabled:opacity-50"
     >
-      <CheckCircle className="w-3 h-3" /> {loading === "approved" ? "..." : "Approve"}
+      <CheckCircle className="w-3 h-3" /> {loading === "approved" ? "..." : approveLabel}
     </button>
   );
 
   return (
     <>
-      {currentStatus === "pending" ? (
+      {currentStatus === "pending" || currentStatus === "awaiting_confirmation" ? (
         <div className="flex gap-1">
           {approveButton}
           {rejectButton}

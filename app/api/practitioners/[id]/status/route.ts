@@ -13,13 +13,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     await connectDB();
     const { status, reason } = await req.json();
 
-    const update: Record<string, unknown> = { status };
+    const update: Record<string, unknown> = { $set: { status } };
+    const set = update.$set as Record<string, unknown>;
     if (status === "approved") {
-      update.approvedAt = new Date();
-      update.rejectionReason = "";
+      set.approvedAt = new Date();
+      set.rejectionReason = "";
+      // Admin override publish — retire any outstanding preview link.
+      update.$unset = { reviewToken: "", reviewTokenExpiresAt: "" };
     }
     if (status === "rejected") {
-      update.rejectionReason = typeof reason === "string" ? reason.trim() : "";
+      set.rejectionReason = typeof reason === "string" ? reason.trim() : "";
     }
 
     const practitioner = await Practitioner.findByIdAndUpdate(params.id, update, { new: true });

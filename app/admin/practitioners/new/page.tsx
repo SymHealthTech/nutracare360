@@ -21,7 +21,7 @@ export default async function AdminNewPractitionerPage() {
             <ChevronLeft className="w-4 h-4" /> Back to Practitioners
           </Link>
           <h1 className="font-playfair text-3xl font-bold text-[#1A1A2E]">Add New Practitioner</h1>
-          <p className="text-[#6B7280] mt-1">Create a listing directly — it will be approved immediately.</p>
+          <p className="text-[#6B7280] mt-1">Publish a listing directly, or send the practitioner a preview link to confirm before it goes live — choose on the last step.</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-[#E5E7EB] overflow-hidden">

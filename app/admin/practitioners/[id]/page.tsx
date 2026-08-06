@@ -6,6 +6,8 @@ import Practitioner from "@/models/Practitioner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { AdminPractitionerActions } from "@/components/admin/AdminPractitionerActions";
 import { AdminDeleteButton } from "@/components/admin/AdminDeleteButton";
+import { ReviewLinkPanel } from "@/components/admin/ReviewLinkPanel";
+import { headers } from "next/headers";
 import { StarRating } from "@/components/ui/StarRating";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Phone, Mail, Globe, CheckCircle, Pencil } from "lucide-react";
@@ -18,11 +20,21 @@ export default async function AdminPractitionerDetailPage({ params }: Props) {
 
   await connectDB();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const p = await Practitioner.findById(params.id).lean() as any;
+  const p = await Practitioner.findById(params.id).select("+reviewToken +reviewTokenExpiresAt").lean() as any;
   if (!p) notFound();
 
   const address = p.address as Record<string, string>;
   const services = (p.services || []) as Array<Record<string, string>>;
+
+  // Build the preview link for a listing still awaiting confirmation.
+  const isAwaiting = p.status === "awaiting_confirmation";
+  let previewUrl = "";
+  if (isAwaiting && p.reviewToken) {
+    const h = headers();
+    const host = h.get("x-forwarded-host") || h.get("host") || "";
+    const proto = h.get("x-forwarded-proto") || "https";
+    if (host) previewUrl = `${proto}://${host}/practitioners/${p.slug}?token=${p.reviewToken}`;
+  }
 
   return (
     <AdminShell>
@@ -35,9 +47,10 @@ export default async function AdminPractitionerDetailPage({ params }: Props) {
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
               p.status === "approved" ? "bg-accent-50 text-accent-700"
               : p.status === "pending" ? "bg-yellow-50 text-yellow-700"
+              : p.status === "awaiting_confirmation" ? "bg-amber-50 text-amber-700"
               : "bg-red-50 text-red-700"
             }`}>
-              {p.status as string}
+              {p.status === "awaiting_confirmation" ? "awaiting confirmation" : p.status as string}
             </span>
             <AdminPractitionerActions id={params.id} currentStatus={p.status as string} />
             <Link
@@ -49,6 +62,17 @@ export default async function AdminPractitionerDetailPage({ params }: Props) {
             <AdminDeleteButton id={params.id} name={p.name as string} />
           </div>
         </div>
+
+        {isAwaiting && previewUrl && (
+          <div className="mb-6">
+            <ReviewLinkPanel
+              id={params.id}
+              previewUrl={previewUrl}
+              email={p.email as string}
+              expiresAt={p.reviewTokenExpiresAt ? new Date(p.reviewTokenExpiresAt).toISOString() : undefined}
+            />
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl border border-[#E5E7EB] p-7 space-y-6">
           {/* Header */}

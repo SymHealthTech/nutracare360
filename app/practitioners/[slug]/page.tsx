@@ -14,10 +14,15 @@ import type { Metadata } from "next";
 import { SendEmailButton } from "@/components/practitioners/SendEmailButton";
 import { ProfileViewTracker } from "@/components/analytics/ProfileViewTracker";
 import { ContactLink } from "@/components/analytics/ContactLink";
+import { PreviewConfirmBar } from "@/components/practitioners/PreviewConfirmBar";
 
-interface Props { params: { slug: string } }
+interface Props { params: { slug: string }; searchParams: { token?: string } }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  // Preview mode (valid token) must never be indexed by search engines.
+  if (searchParams?.token) {
+    return { robots: { index: false, follow: false } };
+  }
   await connectDB();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const p = await Practitioner.findOne({ slug: params.slug, status: "approved" }).lean() as any;
@@ -32,11 +37,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PractitionerProfilePage({ params }: Props) {
+export default async function PractitionerProfilePage({ params, searchParams }: Props) {
   await connectDB();
+  const token = searchParams?.token;
+
+  // With a valid, unexpired token the practitioner can preview their listing
+  // before it's public; without one, only approved listings are visible.
+  const query = token
+    ? { slug: params.slug, reviewToken: token, reviewTokenExpiresAt: { $gt: new Date() } }
+    : { slug: params.slug, status: "approved" };
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const p = await Practitioner.findOne({ slug: params.slug, status: "approved" }).lean() as any;
+  const p = await Practitioner.findOne(query).lean() as any;
   if (!p) notFound();
+
+  // Only show the confirm bar while the listing is still awaiting confirmation.
+  const isPreview = !!token && p.status === "awaiting_confirmation";
 
   const address = p.address as Record<string, string>;
   const social = p.social as Record<string, string>;
@@ -59,8 +75,10 @@ export default async function PractitionerProfilePage({ params }: Props) {
   const primaryCategory = (p.categories as string[])?.[0] ?? "";
 
   return (
-    <div className="pt-16 pb-20 min-h-screen bg-[#FAFAF8]">
-      <ProfileViewTracker slug={analyticsSlug} category={primaryCategory} />
+    <div className={`${isPreview ? "pt-32" : "pt-16"} pb-20 min-h-screen bg-[#FAFAF8]`}>
+      {isPreview
+        ? <PreviewConfirmBar slug={params.slug} token={token as string} displayName={displayName} />
+        : <ProfileViewTracker slug={analyticsSlug} category={primaryCategory} />}
       {/* Hero banner */}
       <div className={`relative w-full overflow-hidden bg-gradient-to-br from-primary-800 via-primary-600 to-emerald-500 ${isClinic ? "h-20 md:h-24" : "h-48 md:h-56"}`}>
         {!isClinic && p.coverImage && (

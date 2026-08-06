@@ -53,8 +53,11 @@ export interface IPractitioner extends Document {
   gallery: string[];
   rating: number;
   reviewCount: number;
-  status: "pending" | "approved" | "rejected" | "suspended";
+  status: "pending" | "awaiting_confirmation" | "approved" | "rejected" | "suspended";
   rejectionReason?: string;
+  reviewToken?: string;
+  reviewTokenExpiresAt?: Date;
+  confirmedAt?: Date;
   listingType: "free" | "premium";
   isFeatured: boolean;
   isVerified: boolean;
@@ -128,8 +131,14 @@ const PractitionerSchema = new Schema<IPractitioner>(
     gallery: [String],
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
-    status: { type: String, enum: ["pending", "approved", "rejected", "suspended"], default: "pending", index: true },
+    status: { type: String, enum: ["pending", "awaiting_confirmation", "approved", "rejected", "suspended"], default: "pending", index: true },
     rejectionReason: String,
+    // Private confirmation flow: a one-time preview token the practitioner uses to
+    // review their listing before it goes live. `select: false` keeps it out of
+    // normal reads (e.g. the public list API) so it never leaks to the client.
+    reviewToken: { type: String, select: false },
+    reviewTokenExpiresAt: { type: Date, select: false },
+    confirmedAt: Date,
     listingType: { type: String, enum: ["free", "premium"], default: "free" },
     isFeatured: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
