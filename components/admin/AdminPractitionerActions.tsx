@@ -53,7 +53,11 @@ export function AdminPractitionerActions({ id, currentStatus }: Props) {
 
   return (
     <>
-      {currentStatus === "pending" || currentStatus === "awaiting_confirmation" ? (
+      {currentStatus === "awaiting_confirmation" ? (
+        // Manual review flow: publish when the practitioner confirms by email.
+        // Rejecting is handled by deleting the listing (separate Delete button).
+        approveButton
+      ) : currentStatus === "pending" ? (
         <div className="flex gap-1">
           {approveButton}
           {rejectButton}

@@ -4,9 +4,8 @@ import crypto from "crypto";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Practitioner from "@/models/Practitioner";
-import { sendReviewLinkEmail } from "@/lib/email";
 
-// Preview links stay valid for one month so the practitioner has time to confirm.
+// Preview links stay valid for one month so the practitioner has time to review.
 const REVIEW_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export async function POST(req: NextRequest) {
@@ -21,7 +20,8 @@ export async function POST(req: NextRequest) {
 
     const slug = `${body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${body.address?.city?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "canada"}-${Date.now()}`;
 
-    // "review" → create hidden and send the practitioner a preview link to confirm.
+    // "review" → create the listing hidden and generate a private preview link
+    // for the admin to copy and send manually. No email is sent automatically.
     // Anything else → publish immediately (the default, existing behaviour).
     if (publishMode === "review") {
       const reviewToken = crypto.randomUUID();
@@ -35,22 +35,13 @@ export async function POST(req: NextRequest) {
 
       const previewUrl = `${req.nextUrl.origin}/practitioners/${slug}?token=${reviewToken}`;
 
-      // Graceful fail — the listing is created even if the email can't be sent.
-      let emailSent = true;
-      try {
-        await sendReviewLinkEmail(practitioner, previewUrl);
-      } catch (emailErr) {
-        emailSent = false;
-        console.error("Review link email failed:", emailErr);
-      }
-
       // Strip token fields from the response payload.
       const safe = practitioner.toObject();
       delete safe.reviewToken;
       delete safe.reviewTokenExpiresAt;
 
       return NextResponse.json(
-        { success: true, practitioner: safe, previewUrl, emailSent, mode: "review" },
+        { success: true, practitioner: safe, previewUrl, mode: "review" },
         { status: 201 }
       );
     }

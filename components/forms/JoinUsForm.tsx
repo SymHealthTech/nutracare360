@@ -1067,10 +1067,10 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
                   onChange={() => setPublishMode("review")}
                 />
                 <span className="text-sm">
-                  <span className="font-semibold text-[#1A1A2E]">Send a confirmation link first</span>
+                  <span className="font-semibold text-[#1A1A2E]">Create a preview link first</span>
                   <span className="block text-[#6B7280] mt-0.5">
-                    The listing stays hidden and a private preview link is emailed to{" "}
-                    <strong>{form.email || "the practitioner"}</strong>. It only goes live after they confirm.
+                    The listing stays hidden and you get a private preview link to copy and send to{" "}
+                    <strong>{form.email || "the practitioner"}</strong> yourself. Publish it manually once they confirm.
                   </span>
                 </span>
               </label>
@@ -1138,7 +1138,7 @@ export function JoinUsForm({ isAdmin = false, editId, initialData, selfEditToken
               : editId
                 ? "Save Changes →"
                 : isAdmin
-                  ? publishMode === "review" ? "Create & Send Link →" : "Create Listing →"
+                  ? publishMode === "review" ? "Create & Get Link →" : "Create Listing →"
                   : "Submit Listing →"}
           </button>
         )}

@@ -4,16 +4,15 @@ import crypto from "crypto";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Practitioner from "@/models/Practitioner";
-import { sendReviewLinkEmail } from "@/lib/email";
 
-// Preview links stay valid for one month so the practitioner has time to confirm.
+// Preview links stay valid for one month.
 const REVIEW_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
- * Admin: (re)generate a preview/confirmation link for a listing and email it to
- * the practitioner. Works for a fresh draft or to move an existing pending
- * listing into the confirmation flow. Refreshes the token each time so old
- * links stop working.
+ * Admin: (re)generate a private preview link for a listing and return it so the
+ * admin can copy and send it manually. No email is sent from here. Works for a
+ * fresh draft or to move an existing pending listing into the review flow.
+ * Refreshes the token each time so any previously shared link stops working.
  */
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -37,15 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     const previewUrl = `${req.nextUrl.origin}/practitioners/${practitioner.slug}?token=${reviewToken}`;
 
-    let emailSent = true;
-    try {
-      await sendReviewLinkEmail(practitioner, previewUrl);
-    } catch (emailErr) {
-      emailSent = false;
-      console.error("Review link email failed:", emailErr);
-    }
-
-    return NextResponse.json({ success: true, previewUrl, emailSent });
+    return NextResponse.json({ success: true, previewUrl });
   } catch (err) {
     console.error("[review-link]", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

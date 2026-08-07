@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import { SendEmailButton } from "@/components/practitioners/SendEmailButton";
 import { ProfileViewTracker } from "@/components/analytics/ProfileViewTracker";
 import { ContactLink } from "@/components/analytics/ContactLink";
-import { PreviewConfirmBar } from "@/components/practitioners/PreviewConfirmBar";
+import { PreviewBanner } from "@/components/practitioners/PreviewBanner";
 
 interface Props { params: { slug: string }; searchParams: { token?: string } }
 
@@ -77,7 +77,7 @@ export default async function PractitionerProfilePage({ params, searchParams }: 
   return (
     <div className={`${isPreview ? "pt-32" : "pt-16"} pb-20 min-h-screen bg-[#FAFAF8]`}>
       {isPreview
-        ? <PreviewConfirmBar slug={params.slug} token={token as string} displayName={displayName} />
+        ? <PreviewBanner />
         : <ProfileViewTracker slug={analyticsSlug} category={primaryCategory} />}
       {/* Hero banner */}
       <div className={`relative w-full overflow-hidden bg-gradient-to-br from-primary-800 via-primary-600 to-emerald-500 ${isClinic ? "h-20 md:h-24" : "h-48 md:h-56"}`}>
